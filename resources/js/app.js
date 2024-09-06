@@ -8,7 +8,12 @@ import App from '@/views/App.vue';
 import router from '@/routes';
 import theme from '@/theme';
 
+import TopBar from '@/views/inc/TopBar.vue';
+
 const Vue = createApp(App);
+
+Vue.component('TopBar', TopBar);
+
 Vue.use(PrimeVue, {
     theme: {
         preset: theme,

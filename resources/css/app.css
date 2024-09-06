@@ -7,6 +7,71 @@
     src: url(../assets/fonts/seven-segment.ttf);
 }
 
+.file-dropdown .p-fileupload{
+    @apply
+    border-none
+    rounded-none
+    overflow-hidden
+    !important
+}
+.file-dropdown .p-fileupload-header{
+    @apply
+    hidden
+    !important
+}
+.file-dropdown .p-fileupload-content{
+    @apply
+    relative
+    border
+    border-gray-300
+    rounded-md
+    p-3
+    overflow-hidden
+    !important
+}
+.file-dropdown .p-fileupload-content::after{
+    content: '';
+    transition: .2s;
+    @apply
+    absolute
+    top-0
+    left-0
+    right-0
+    bottom-0
+    block
+    w-full
+    h-full
+    opacity-0
+    pointer-events-none
+    bg-gray-100
+}
+.file-dropdown .p-fileupload-content.p-fileupload-highlight::after{
+    @apply
+    opacity-50
+}
+
+
+.scroll_bar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.scroll_bar::-webkit-scrollbar-track {
+    border-radius: 25px;
+    @apply
+    bg-gray-200
+}
+
+.scroll_bar::-webkit-scrollbar-thumb {
+    border-radius: 25px;
+    @apply
+    bg-gray-400
+}
+
+.scroll_bar_none::-webkit-scrollbar{
+    @apply
+    hidden
+}
+
 .logo{
     text-align: center;
     @apply 
@@ -19,4 +84,203 @@
     font-weight: bolder;
     @apply
     text-5xl
+}
+
+.main-container{
+    @apply
+    antialiased
+    bg-gray-100
+    text-gray-900
+    w-full
+    min-h-screen
+    flex
+    flex-col
+    items-center
+    justify-center
+    px-4 py-12
+}
+main{
+    @apply
+    w-full
+    max-w-screen-lg
+    bg-white
+    shadow-md
+    rounded-lg
+    p-5
+    grow
+    flex
+    gap-5
+}
+.sidemenu{
+    flex: none;
+    @apply
+    w-48
+    bg-gray-50
+    rounded-lg
+    p-5
+    flex
+    flex-col
+    gap-3
+}
+.main-box{
+    @apply
+    grow
+    flex
+    flex-col
+}
+.content-box{
+    @apply
+    grow
+    flex
+    flex-col
+    h-px
+}
+.content-box-inner{
+    @apply
+    h-full
+    overflow-auto
+    scroll_bar
+    bg-gray-50
+    rounded-md
+    p-5
+}
+
+.link-btn{
+    @apply
+    inline-block
+    font-medium
+    text-center
+    rounded-md
+    border-2
+    border-gray-950
+    px-2 py-2
+}
+.link-btn i{
+    @apply
+    inline-block
+    text-xs
+}
+.link-btn.fill{
+    @apply
+    border-none
+    justify-center
+    bg-gray-950
+    text-gray-50
+    px-0
+}
+
+.btn-squre{
+    @apply
+    inline-flex
+    w-[32px]
+    h-[32px]
+    hover:bg-gray-800
+    !important
+}
+.btn-squre .p-button-icon{
+    @apply
+    text-xs
+}
+
+.btn-outline{
+    @apply
+    bg-transparent
+    border-2
+    text-gray-950
+    hover:bg-gray-800
+    hover:text-gray-50
+    !important
+}
+.btn-outline.active{
+    @apply
+    bg-gray-950
+    text-gray-50
+    !important
+}
+
+.template-preview{
+    @apply
+    relative
+    shadow
+    rounded-md
+    overflow-hidden
+    bg-white
+    p-4
+}
+.template-preview .btns{
+    @apply
+    absolute
+    top-0
+    left-0
+    right-0
+    bottom-0
+    z-10
+    flex
+    items-center
+    justify-center
+    gap-2
+    w-full
+    h-full
+    bg-gray-50/[.3]
+    opacity-0
+    pointer-events-none
+    transition-all
+    duration-300
+}
+.template-preview:hover .btns{
+    @apply
+    opacity-100
+    pointer-events-auto
+}
+.template-preview .btns > *{
+    @apply
+    opacity-0
+    transition-all
+    duration-150
+    delay-75
+}
+.template-preview:hover .btns > *{
+    @apply
+    opacity-100
+}
+.template-preview iframe{
+    @apply
+    w-full
+    h-[280px]
+    rounded-md
+    border
+    overflow-hidden
+    transition-all
+}
+.template-preview:hover iframe{
+    @apply
+    blur-[1px]
+}
+
+.notifications{
+    @apply
+    flex
+    items-center
+    justify-between
+    bg-gray-100
+    rounded-md
+    p-1
+    cursor-pointer
+    transition-all
+    hover:bg-gray-200
+}
+.notifications > span{
+    @apply
+    font-medium
+    px-3
+    py-1
+}
+.notifications > button{
+    opacity: 0;
+    transform: scale(0, 0);
+    transition: .2s;
+}
+.notifications:hover > button{
+    opacity: 1;
+    transform: scale(1, 1);
 }

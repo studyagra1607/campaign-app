@@ -1,6 +1,10 @@
 <template>
+    
+    <div class="main-container">
 
-    <router-view :key="$route.fullPath"></router-view>
+        <router-view :key="$route.fullPath"></router-view>
+
+    </div>
 
 </template>
 
