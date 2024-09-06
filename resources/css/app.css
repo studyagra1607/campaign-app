@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: 'seven-segment';
+    src: url(../assets/fonts/seven-segment.ttf);
+}
+
+.logo{
+    text-align: center;
+    @apply 
+    mb-6
+}
+.logo a{
+    text-decoration: none;
+    display: inline-block;
+    font-family: 'seven-segment';
+    font-weight: bolder;
+    @apply
+    text-5xl
+}
