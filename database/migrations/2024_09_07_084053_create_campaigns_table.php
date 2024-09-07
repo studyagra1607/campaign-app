@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->unsignedBigInteger('list_id');
-            $table->foreign('list_id')->on('lists')->references('id')->onDelete('cascade');
+            $table->foreign('list_id')->on('e_lists')->references('id')->onDelete('cascade');
             $table->unsignedBigInteger('template_id');
             $table->foreign('template_id')->on('templates')->references('id')->onDelete('cascade');
             $table->unsignedBigInteger('user_id');

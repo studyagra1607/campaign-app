@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('email')->nullable();
             $table->unsignedBigInteger('list_id');
-            $table->foreign('list_id')->on('lists')->references('id')->onDelete('cascade');
+            $table->foreign('list_id')->on('e_lists')->references('id')->onDelete('cascade');
             $table->timestamps();
         });
     }
