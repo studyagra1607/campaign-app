@@ -5,7 +5,7 @@
 				Enter Name
 			</label>
 			<InputText id="name" v-model="list.name" placeholder="Enter Name" />
-			<span class="input-error-msg" v-if="errors.name">
+			<span class="input-error-msg" v-if="errors?.name">
 				{{ errors.name[0] }}
 			</span>
 		</div>
@@ -43,7 +43,7 @@
 					</span>
 				</div>
 			</div>
-			<span class="input-error-msg" v-if="errors.file">
+			<span class="input-error-msg" v-if="errors?.file">
 				{{ errors.file[0] }}
 			</span>
 		</div>

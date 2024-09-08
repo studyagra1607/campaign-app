@@ -6,6 +6,9 @@ use App\Http\Requests\ListRequest;
 use App\Models\EList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Spatie\SimpleExcel\SimpleExcelReader;
+use Illuminate\Support\Str;
 
 class EListController extends Controller
 {
@@ -30,7 +33,34 @@ class EListController extends Controller
      */
     public function store(ListRequest $request)
     {
-        return $request->all();
+        try {
+
+            if($request->hasFile('file')){
+                
+                $file = $request->file('file');
+
+                $slugname = Str::slug($request->name);
+                $folder_id = auth()->id();
+                $sub_folder = 'lists';
+                $filename = $slugname.'-'.time().'.'.$file->getClientOriginalExtension();
+                $full_filepath = "{$folder_id}/{$sub_folder}/{$filename}";
+
+                Storage::disk('local')->put($full_filepath, file_get_contents($file));
+
+                // $excel = SimpleExcelReader::create($full_filepath);
+
+            };
+
+            // DB::transaction(function () use ($request) {
+                
+            // });
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage().$e->getLine(),
+            ], 400);
+        }
     }
 
     /**
