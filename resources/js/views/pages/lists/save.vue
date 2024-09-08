@@ -14,7 +14,7 @@
 				Upload List
 			</label>
 			<div class="file-dropdown">
-				<FileUpload :fileLimit="fileLimit" :multiple="true">
+				<FileUpload accept=".xlsx,.csv" :fileLimit="fileLimit" :multiple="true">
 					<template #header="{ chooseCallback }">
 						<div ref="chooseFiles" @click="chooseCallback()"></div>
 					</template>
@@ -43,11 +43,9 @@
 					</span>
 				</div>
 			</div>
-			<template v-for="(err, index) of errors">
-				<span class="input-error-msg" v-if="index.startsWith('file')">
-					{{ err[0] }}
-				</span>
-			</template>
+			<span class="input-error-msg" v-if="errors.file">
+				{{ errors.file[0] }}
+			</span>
 		</div>
 		<div class="mb-4">
 			<Button type="submit" label="Add List" class="min-w-28" :disabled="list?.file?.length > fileLimit" />
@@ -65,7 +63,7 @@ const loading = ref(false);
 
 const fileErrors = ref([]);
 
-const fileLimit = ref(5);
+const fileLimit = ref(1);
 
 const list = ref({});
 
@@ -98,7 +96,7 @@ const sortName = (name, start, end) => {
 };
 
 const setSelectedFiles = (files) => {
-	list.value['file[]'] = files;
+	list.value.file = files[0];
 };
 
 const setFileErrors = (msg) => {
