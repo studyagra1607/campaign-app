@@ -24,7 +24,8 @@ class ListRequest extends FormRequest
         return [
             // 'dept_name' => 'required|string|unique:m_department,dept_name'.(isset($this->route('department')->id) ? ','.$this->route('department')->id.',id' : ''),
             'name' => 'required',
-            'file' => 'required',
+            'file' => 'max:1',
+            'file.*' => 'required|mimes:xlsx,csv',
         ];
     }
 

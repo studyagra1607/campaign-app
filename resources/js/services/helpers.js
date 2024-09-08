@@ -62,3 +62,25 @@ export const handleErrorResponse = (e) => {
     };
     return data;
 }
+
+
+
+// FormData =============================
+export const formData = (data, ...fileKeys) => {
+    let  form = new FormData();
+    let keys = Object.keys(data);
+    keys.forEach((key) => {
+        if(fileKeys.includes(key)){
+            if(data[key]?.length > 0){
+                data[key].forEach((value) => {
+                    form.append(`${key}[]`, value);
+                });
+            }else{
+                form.append(key, data[key]);
+            };
+        }else{
+            form.append(key, data[key]);
+        };
+    });
+    return form;
+};

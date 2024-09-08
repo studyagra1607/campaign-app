@@ -15,7 +15,11 @@ export default function useList() {
         errors.value = [];
         try {
             
-            let response = await axiosInstance.post('/api/list', data);
+            let response = await axiosInstance.post('/api/list', data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
 
             console.log("Axios Worked!", response);
 

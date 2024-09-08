@@ -49,18 +49,12 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    console.log(to);
-    
     const authStore = useAuthStore();
     try {
 
-        console.log('1',authStore.isAuthenticated);
-        
         if(!authStore.isAuthenticated){
             await authStore.checkAuthentication();
         };
-        
-        console.log('2',authStore.isAuthenticated);
         
         if (to.meta.requiresAuth && !authStore.isAuthenticated) {
             authStore.logout('unauthorized');
