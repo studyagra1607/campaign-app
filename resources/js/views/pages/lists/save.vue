@@ -14,7 +14,7 @@
 				Upload List
 			</label>
 			<div class="file-dropdown">
-				<FileUpload accept=".xlsx,.csv" :fileLimit="fileLimit" :multiple="true">
+				<FileUpload accept=".xls,.xlsx,.csv" :fileLimit="fileLimit" :multiple="true">
 					<template #header="{ chooseCallback }">
 						<div ref="chooseFiles" @click="chooseCallback()"></div>
 					</template>
@@ -43,12 +43,10 @@
 					</span>
 				</div>
 			</div>
-			<span class="input-error-msg" v-if="errors?.file">
-				{{ errors.file[0] }}
-			</span>
+			<span class="input-error-msg" v-if="errors?.file" v-html="errors?.file[0]"></span>
 		</div>
 		<div class="mb-4">
-			<Button type="submit" label="Add List" class="min-w-28" :disabled="list?.file?.length > fileLimit" />
+			<Button type="submit" label="Add List" class="min-w-28" :loading="loading" :disabled="loading || list?.file?.length > fileLimit" />
 		</div>
 	</form>
 </template>

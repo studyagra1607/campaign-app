@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\CsvRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ListRequest extends FormRequest
@@ -22,8 +23,21 @@ class ListRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|regex:/^[a-zA-Z0-9\s]+$/',
-            'file' => 'required|mimes:xlsx,csv',
+            'name' => 'bail|required|regex:/^[a-zA-Z0-9\s\.\']+$/',
+            'file' => [
+                'bail',
+                'required',
+                'file',
+                'mimes:csv,xls,xlsx',
+                new CsvRule([
+                    'name' => 'required|max:255|regex:/^[a-zA-Z0-9\s\.\']+$/',
+                    'email' => 'required|email|unique:users,email|max:255',
+                    // 'dob' => 'required|date|before:today',
+                    // 'address' => 'required|string|max:255',
+                    // 'phone' => 'required|string|min:10|max:15',
+                    // '' => 'required|string',
+                ])
+            ],
         ];
     }
 
