@@ -2,11 +2,11 @@
     <div class="main-box">
 
 		<Dialog :header="'Add List'" v-model:visible="displaySaveList" :draggable="false" modal :style="{ width: '25vw' }">
-			<SaveList />
+			<SaveList @closeModal="hideHandler(), filterData()" />
 		</Dialog>
 		
 		<Dialog :header="'List Name'" v-model:visible="displayViewList" :draggable="false" modal :style="{ width: '60vw', height: '80vh' }">
-			<ViewList />
+			<ViewList @closeModal="hideHandler(), filterData()" />
 		</Dialog>
 		
 		<TopBar>
@@ -120,6 +120,16 @@ const deleteListFn = (id) => {
 			toast.add({ severity: 'contrast', summary: 'Deleted successfully!', life: 3000 });
         },
     });
+};
+
+const filterData = async () => {
+	isSkeleton.value = true;
+	isSkeleton.value = false;
+};
+
+const hideHandler = async () => {
+	displaySaveList.value = false;
+	displayViewList.value = false;
 };
 </script>
 

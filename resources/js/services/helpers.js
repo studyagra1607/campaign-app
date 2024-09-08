@@ -40,8 +40,17 @@ export const metaInfo = ({$title, $description, $keywords} = {}) => {
 
 export const handleErrorResponse = (e) => {
     let data = null;
-    if (e.response) {
-        // Axios error with response
+    if (e.data || e.data == '') {
+        data = {
+            status: e.data?.status,
+            statusCode: e?.status,
+            statusText: e?.statusText,
+            data: e.data,
+            message: e.data?.message,
+            errors: e.data?.errors,
+        };
+    }
+    else if (e.response) {
         data = {
             status: false,
             statusCode: e.response?.status,
@@ -50,15 +59,16 @@ export const handleErrorResponse = (e) => {
             message: !e.response?.data?.errors ? e.response?.data?.message : null,
             errors: e.response?.data?.errors,
         };
-    } else {
-        // Other errors without response
+    }
+    else {
         data = {
             status: false,
-            message: 'An error occurred. Please try again later.'
+            message: 'An error occurred. Please try again later.',
+            js: true
         };
     };
-    if (data.message) {
-        staticToast({msg: data.message, severity: 'error'});
+    if(data.js){
+        staticToast({msg: data.message, severity: 'warn'});
     };
     return data;
 }

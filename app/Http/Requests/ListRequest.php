@@ -22,7 +22,7 @@ class ListRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
+            'name' => 'required|regex:/^[a-zA-Z0-9\s]+$/',
             'file' => 'required|mimes:xlsx,csv',
         ];
     }
@@ -30,8 +30,22 @@ class ListRequest extends FormRequest
     public function messages()
     {
         return [
+            'name.regex' => 'The :attributes field must only contain letters and numbers.'
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
             
         ];
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'name' => trim($this->name),
+        ]);
+    }
+    
 }

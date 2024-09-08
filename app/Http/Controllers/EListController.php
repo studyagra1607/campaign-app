@@ -35,26 +35,31 @@ class EListController extends Controller
     {
         try {
 
-            if($request->hasFile('file')){
+            DB::transaction(function () use ($request) {
                 
-                $file = $request->file('file');
-
-                $slugname = Str::slug($request->name);
-                $folder_id = auth()->id();
-                $sub_folder = 'lists';
-                $filename = $slugname.'-'.time().'.'.$file->getClientOriginalExtension();
-                $full_filepath = "{$folder_id}/{$sub_folder}/{$filename}";
-
-                Storage::disk('local')->put($full_filepath, file_get_contents($file));
-
-                // $excel = SimpleExcelReader::create($full_filepath);
-
-            };
-
-            // DB::transaction(function () use ($request) {
+                if($request->hasFile('file')){
                 
-            // });
+                    $file = $request->file('file');
+    
+                    $slugname = Str::slug($request->name);
+                    $folder_id = auth()->id();
+                    $sub_folder = 'lists';
+                    $filename = $slugname.'-'.time().'.'.$file->getClientOriginalExtension();
+                    $full_filepath = "{$folder_id}/{$sub_folder}/{$filename}";
+    
+                    // Storage::disk('local')->put($full_filepath, file_get_contents($file));
+    
+                    // $excel = SimpleExcelReader::create($full_filepath);
 
+                };
+                
+            });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'List uploaded successfully',
+            ]);
+            
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,

@@ -1,12 +1,11 @@
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, getCurrentInstance } from "vue";
 import axiosInstance from '@/services/axiosInstance.js';
 import { handleErrorResponse } from "@/services/helpers.js";
 
 export default function useList() {
 
-    const router = useRouter();
-    
+    const { emit } = getCurrentInstance();
+
     const errors = ref([]);
 
     const lists = ref([]);
@@ -15,16 +14,13 @@ export default function useList() {
         errors.value = [];
         try {
             
-            let response = await axiosInstance.post('/api/list', data, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+            let response = await axiosInstance.post('/api/list', data);
 
-            console.log("Axios Worked!", response);
+            if(response.data.status){
+                emit('closeModal');
+            };
 
         } catch (e) {
-            console.log("Axios error: ", e);
             errors.value = handleErrorResponse(e).errors;
         };
     }
