@@ -117,7 +117,7 @@ const viewCampaignFn = (id) => {
 const deleteCampaignFn = (id) => {
     confirm.require({
         accept: () => {
-			toast.add({ severity: 'contrast', summary: 'Deleted successfully!', life: 3000 });
+			toast.add({ severity: 'warn', summary: 'Deleted successfully!', life: 3000 });
         },
     });
 };

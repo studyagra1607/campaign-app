@@ -1,10 +1,10 @@
 <template>
 
-    <Toast class="inline-block w-auto min-w-[240px]">
+    <Toast class="whitespace-normal inline-block w-auto min-w-[240px] max-w-[320px] z-[9999]" id="toastContainer">
         <template #container="{ message, closeCallback }">
             <div class="flex items-center justify-between px-3 py-3">
-                <div>
-                    <i class="pi pi-check me-2"></i>
+                <div class="flex gap-2">
+                    <i class="pi pi-check mt-1"></i>
                     <span>{{ message.summary }}</span>
                 </div>
                 <i class="pi pi-times-circle cursor-pointer ms-5" @click="closeCallback()"></i>
@@ -36,7 +36,7 @@
 
         <SideMenu />
 
-        <router-view :key="$route.fullPath"></router-view>
+        <router-view></router-view>
         
     </main>
 

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ListRequest;
 use App\Models\EList;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EListController extends Controller
 {
@@ -12,7 +14,7 @@ class EListController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([]);
     }
 
     /**
@@ -26,9 +28,9 @@ class EListController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ListRequest $request)
     {
-        //
+        return $request->all();
     }
 
     /**

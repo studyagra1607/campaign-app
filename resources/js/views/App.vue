@@ -2,7 +2,7 @@
     
     <div class="main-container">
 
-        <router-view :key="$route.fullPath"></router-view>
+        <router-view></router-view>
 
     </div>
 

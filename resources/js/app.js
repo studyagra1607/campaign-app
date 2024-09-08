@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';
 import DialogService from 'primevue/dialogservice';
@@ -11,6 +12,7 @@ import theme from '@/theme';
 import TopBar from '@/views/inc/TopBar.vue';
 
 const Vue = createApp(App);
+const pinia = createPinia();
 
 Vue.component('TopBar', TopBar);
 
@@ -19,6 +21,7 @@ Vue.use(PrimeVue, {
         preset: theme,
     }
 });
+Vue.use(pinia);
 Vue.use(router);
 Vue.use(ToastService);
 Vue.use(DialogService);

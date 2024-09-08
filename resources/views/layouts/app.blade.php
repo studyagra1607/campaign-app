@@ -32,5 +32,6 @@
                 {{ $slot }}
             </div>
         </div>
+        <script src="{{ config('app.url') }}/assets/js/staticToast.js"></script>
     </body>
 </html>

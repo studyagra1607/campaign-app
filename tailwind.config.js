@@ -22,6 +22,19 @@ export default {
                     },
                 ],
             },
+            keyframes: {
+                fadeOut: {
+                    from: {
+                        opacity: 1
+                    },
+                    to: {
+                        opacity: 0
+                    }
+                }
+            },
+            animation: {
+                "fade-out": 'fadeOut 0.5s',
+            }
         },
     },
 

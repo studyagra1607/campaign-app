@@ -26,5 +26,19 @@
                 {{ $slot }}
             </div>
         </div>
+        
+        <script src="{{ config('app.url') }}/assets/js/staticToast.js"></script>
+        
+        <script>
+            @if (!auth()->check())
+                @if (Request::has('unauthorized'))
+                    staticToast({msg: "Login required for access!", severity: 'error'});
+                @endif
+                @if (Request::has('session-expired'))
+                    staticToast({msg: "Session has been expired!", severity: 'error'});
+                @endif
+            @endif
+        </script>
+        
     </body>
 </html>
