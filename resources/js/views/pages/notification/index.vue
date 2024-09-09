@@ -1,11 +1,7 @@
 <template>
     <div class="main-box">
 		
-		<TopBar>
-			<h4 class="font-semibold text-lg">
-				Notifications
-			</h4>
-		</TopBar>
+		<TopBar></TopBar>
 
 		<div class="content-box">
 			<div class="content-box-inner">

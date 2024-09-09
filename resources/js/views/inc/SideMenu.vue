@@ -1,13 +1,12 @@
 <template>
     <div class="sidemenu">
-        <router-link :to="{name : 'campaigns'}" :class="{ active: isActiveNav(['campaigns']) }" class="link-btn btn-outline w-full">Home</router-link>
-        <router-link :to="{name : 'lists'}" :class="{ active: isActiveNav(['lists']) }" class="link-btn btn-outline w-full">Lists</router-link>
-        <router-link :to="{name : '404'}" :class="{ active: isActiveNav(['404']) }" class="link-btn btn-outline w-full">Categories</router-link>
-        <router-link :to="{name : '404'}" :class="{ active: isActiveNav(['404']) }" class="link-btn btn-outline w-full">Emails</router-link>
-        <router-link :to="{name : 'templates'}" :class="{ active: isActiveNav(['templates']) }" class="link-btn btn-outline w-full">Tempates</router-link>
-        <router-link :to="{name : '404'}" :class="{ active: isActiveNav(['404']) }" class="link-btn btn-outline w-full">Media</router-link>
+        <router-link :to="{name : 'campaign'}" :class="{ active: isActiveNav(['campaign']) }" class="link-btn btn-outline w-full">Campaign</router-link>
+        <router-link :to="{name : 'category'}" :class="{ active: isActiveNav(['category']) }" class="link-btn btn-outline w-full">Category</router-link>
+        <router-link :to="{name : 'emails'}" :class="{ active: isActiveNav(['emails']) }" class="link-btn btn-outline w-full">Emails</router-link>
+        <router-link :to="{name : 'template'}" :class="{ active: isActiveNav(['template']) }" class="link-btn btn-outline w-full">Tempate</router-link>
+        <router-link :to="{name : 'media'}" :class="{ active: isActiveNav(['media']) }" class="link-btn btn-outline w-full">Media</router-link>
         <OverlayBadge value="4" size="small">
-            <router-link :to="{name : 'notifications'}" :class="{ active: isActiveNav(['notifications']) }" class="link-btn btn-outline w-full" badge="2">Notifications</router-link>
+            <router-link :to="{name : 'notification'}" :class="{ active: isActiveNav(['notification']) }" class="link-btn btn-outline w-full" badge="2">Notification</router-link>
         </OverlayBadge>
         <a href="/profile" class="link-btn btn-outline w-full">Settings</a>
     </div>

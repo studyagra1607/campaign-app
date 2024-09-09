@@ -10,11 +10,13 @@ import router from '@/routes';
 import theme from '@/theme';
 
 import TopBar from '@/views/inc/TopBar.vue';
+import TableWrapper from '@/views/inc/TableWrapper.vue';
 
 const Vue = createApp(App);
 const pinia = createPinia();
 
 Vue.component('TopBar', TopBar);
+Vue.component('TableWrapper', TableWrapper);
 
 Vue.use(PrimeVue, {
     theme: {

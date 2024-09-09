@@ -1,17 +1,8 @@
 <template>
-    <form @submit.prevent="saveListFn()">
-		<div class="flex flex-col gap-2 mb-4">
-			<label for="name" class="block font-medium text-sm text-gray-700">
-				Enter Name
-			</label>
-			<InputText id="name" v-model="list.name" placeholder="Enter Name" />
-			<span class="input-error-msg" v-if="errors?.name">
-				{{ errors.name[0] }}
-			</span>
-		</div>
+    <form @submit.prevent="uploadEmailFn()">
 		<div class="flex flex-col gap-2 mb-4">
 			<label for="file" class="block font-medium text-sm text-gray-700">
-				Upload List
+				Upload
 			</label>
 			<div class="file-dropdown">
 				<FileUpload accept=".xls,.xlsx,.csv" :fileLimit="fileLimit" :multiple="true">
@@ -42,32 +33,38 @@
 						{{ data }}
 					</span>
 				</div>
+				<div class="text-[.68rem] mt-1" v-if="visibleOnec">
+					<i class="pi pi-exclamation-circle text-[.6rem]"></i>
+					Upload a valid file in CSV, XLS, or XLSX format
+				</div>
 			</div>
 			<span class="input-error-msg" v-if="errors?.file" v-html="errors?.file[0]"></span>
 		</div>
 		<div class="mb-4">
-			<Button type="submit" label="Add List" class="min-w-28" :loading="loading" :disabled="loading || list?.file?.length > fileLimit" />
+			<Button type="submit" label="Upload" class="min-w-28" :loading="loading" :disabled="loading || uploadEmails?.file?.length > fileLimit" />
 		</div>
 	</form>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import useList from "@/services/ListService";
+import { ref, watch, onMounted } from "vue";
+import useEmails from "@/services/EmailService";
 
-const { errors, storeList } = useList();
+const { errors, uploadEmail } = useEmails();
 
 const loading = ref(false);
+
+const visibleOnec = ref(true);
 
 const fileErrors = ref([]);
 
 const fileLimit = ref(1);
 
-const list = ref({});
+const uploadEmails = ref({});
 
-const saveListFn = async () => {
+const uploadEmailFn = async () => {
 	loading.value = true;
-	await storeList(list.value);
+	await uploadEmail(uploadEmails.value);
 	loading.value = false;
 };
 
@@ -94,12 +91,19 @@ const sortName = (name, start, end) => {
 };
 
 const setSelectedFiles = (files) => {
-	list.value.file = files[0];
+	uploadEmails.value.file = files[0];
 };
 
 const setFileErrors = (msg) => {
 	fileErrors.value = msg;
 };
+
+watch([errors, fileErrors], ([newErrors, newFileErrors]) => {
+	// (errors.length <= 0) && (fileErrors.length <= 0) 
+    if (newErrors?.length != 0 || newFileErrors?.length != 0) {
+        visibleOnec.value = false;
+    };
+});
 </script>
 
 <style>

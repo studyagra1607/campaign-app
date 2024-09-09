@@ -6,14 +6,11 @@
 		</Dialog>
 		
 		<TopBar>
-			<h4 class="font-semibold text-lg">
-				Templates
-			</h4>
 			<Button icon="pi pi-plus" class="btn-outline" iconClass="text-sm font-black" label="Add Template" @click="saveTemplateFn()" />
 		</TopBar>
 
 		<div class="content-box">
-			<div class="h-full overflow-auto scroll_bar bg-gray-50 rounded-md p-5">
+			<div class="content-box-inner">
 				<div class="grid grid-cols-3 gap-6">
 					<div v-for="(data, index) in templates" :key="index" class="template-preview pb-2">
 						<div class="btns">

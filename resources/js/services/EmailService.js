@@ -2,15 +2,15 @@ import { ref, getCurrentInstance } from "vue";
 import axiosInstance from '@/services/axiosInstance.js';
 import { handleErrorResponse } from "@/services/helpers.js";
 
-export default function useList() {
+export default function useEmail() {
 
     const { emit } = getCurrentInstance();
 
     const errors = ref([]);
 
-    const lists = ref([]);
+    const emails = ref([]);
     
-    const storeList = async (data) => {
+    const uploadEmail = async (data) => {
         errors.value = [];
         try {
             
@@ -27,7 +27,7 @@ export default function useList() {
 
     return {
         errors,
-        lists,
-        storeList,
+        emails,
+        uploadEmail,
     };
 }

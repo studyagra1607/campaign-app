@@ -26,9 +26,17 @@ class CsvRule implements ValidationRule
             foreach ($chunk as $row)
             {
                 $validator = Validator::make($row, $this->rules);
-
+                
                 if ($validator->fails()) {
-                    $fail('In this record have issue. <br>'.json_encode($row));
+                    $template = json_encode($row);
+                    $template .= "<ul>";
+                    foreach ($validator->errors()->toArray() as $key => $errors) {
+                        foreach ($errors as $error) {
+                            $template .= "<li>$error</li>";
+                        }
+                    }
+                    $template .= "</ul>";
+                    $fail($template);
                     return false;
                 };
             };

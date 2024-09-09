@@ -69,6 +69,7 @@
 
 .scroll_bar::-webkit-scrollbar {
     width: 4px;
+    height: 4px;
 }
 
 .scroll_bar::-webkit-scrollbar-track {
@@ -159,6 +160,30 @@ main{
     bg-gray-50
     rounded-md
     p-5
+}
+
+.table-wrapper{
+    @apply
+    grow
+    flex
+    flex-col
+    border
+    mb-2
+}
+.table-wrapper > div{
+    @apply
+    h-px
+    grow
+    flex
+    overflow-auto
+    scroll_bar
+}
+.table-wrapper > div > div{
+    @apply
+    w-1
+    grow
+    overflow-auto
+    scroll_bar
 }
 
 .link-btn{

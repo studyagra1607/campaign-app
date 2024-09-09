@@ -1,3 +1,4 @@
+
 import { createWebHistory, createRouter } from "vue-router";
 import { tokenKey } from "@/constants/authConfig";
 import { useAuthStore } from '@/stores/authStore';
@@ -7,30 +8,42 @@ const routes = [
         path: '/',
         name: 'visitor',
         component: () => import('@/views/layout/visitor.vue'),
-        redirect: {name: 'campaigns'},
+        redirect: {name: 'campaign'},
         children: [
             {
                 path: '/',
-                name: 'campaigns',
-                component: () => import('@/views/pages/campaigns/index.vue'),
+                name: 'campaign',
+                component: () => import('@/views/pages/campaign/index.vue'),
                 meta: { requiresAuth: true },
             },
             {
-                path: '/lists',
-                name: 'lists',
-                component: () => import('@/views/pages/lists/index.vue'),
+                path: '/category',
+                name: 'category',
+                component: () => import('@/views/pages/category/index.vue'),
                 meta: { requiresAuth: true },
             },
             {
-                path: '/templates',
-                name: 'templates',
-                component: () => import('@/views/pages/templates/index.vue'),
+                path: '/emails',
+                name: 'emails',
+                component: () => import('@/views/pages/emails/index.vue'),
                 meta: { requiresAuth: true },
             },
             {
-                path: '/notifications',
-                name: 'notifications',
-                component: () => import('@/views/pages/notifications/index.vue'),
+                path: '/template',
+                name: 'template',
+                component: () => import('@/views/pages/template/index.vue'),
+                meta: { requiresAuth: true },
+            },
+            {
+                path: '/media',
+                name: 'media',
+                component: () => import('@/views/pages/media/index.vue'),
+                meta: { requiresAuth: true },
+            },
+            {
+                path: '/notification',
+                name: 'notification',
+                component: () => import('@/views/pages/notification/index.vue'),
                 meta: { requiresAuth: true },
             },
         ],
