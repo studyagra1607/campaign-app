@@ -9,9 +9,14 @@ class Email extends Model
 {
     use HasFactory;
     
-    public function list()
+    public function user()
     {
-        return $this->belongsTo(EList::class);
+        return $this->belongsTo(User::class);
+    }
+    
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_email');
     }
     
 }

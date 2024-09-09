@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EmailRequest;
 use App\Models\Email;
 use Illuminate\Http\Request;
 
@@ -26,9 +27,27 @@ class EmailController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(EmailRequest $request)
     {
-        //
+        try {
+                
+            if($request->hasFile('file')){
+            
+                $file = $request->file('file');
+
+            };
+                
+            return response()->json([
+                'status' => true,
+                'message' => 'File uploaded successfully',
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage().$e->getLine(),
+            ], 400);
+        }
     }
 
     /**

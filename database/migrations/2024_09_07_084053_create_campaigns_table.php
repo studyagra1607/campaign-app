@@ -14,8 +14,15 @@ return new class extends Migration
         Schema::create('campaigns', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
-            $table->unsignedBigInteger('list_id');
-            $table->foreign('list_id')->on('e_lists')->references('id')->onDelete('cascade');
+            $table->dateTime('schedule')->nullable();
+            $table->enum('schedule_type', ['once', 'always', 'count'])->default('once')->nullable();
+            $table->integer('schedule_count')->nullable();
+            $table->dateTime('last_run')->nullable();
+            $table->integer('run_count')->nullable();
+            $table->enum('progress_status', ['draft', 'running', 'schedule', 'complete'])->default('draft')->nullable();
+            $table->boolean('status')->default(1)->nullable();
+            $table->unsignedBigInteger('category_id');
+            $table->foreign('category_id')->on('categories')->references('id')->onDelete('cascade');
             $table->unsignedBigInteger('template_id');
             $table->foreign('template_id')->on('templates')->references('id')->onDelete('cascade');
             $table->unsignedBigInteger('user_id');

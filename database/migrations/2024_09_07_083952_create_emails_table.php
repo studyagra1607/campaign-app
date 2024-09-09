@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->string('email')->nullable();
-            $table->unsignedBigInteger('list_id');
-            $table->foreign('list_id')->on('e_lists')->references('id')->onDelete('cascade');
+            $table->boolean('subscribe')->default(1)->nullable();
+            $table->boolean('status')->default(1)->nullable();
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->on('users')->references('id')->onDelete('cascade');
             $table->timestamps();
         });
     }

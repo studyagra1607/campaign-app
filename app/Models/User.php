@@ -43,9 +43,9 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function lists()
+    public function categories()
     {
-        return $this->hasMany(EList::class);
+        return $this->hasMany(Category::class);
     }
 
     public function templates()
