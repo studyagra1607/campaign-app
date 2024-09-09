@@ -23,7 +23,7 @@
 						}
 					}"
 				/>
-				<Button icon="pi pi-plus" class="btn-outline" iconClass="text-sm font-black" label="Import Emails" @click="uploadEmailFn()" />
+				<Button icon="pi pi-download" class="btn-outline" iconClass="text-sm font-black" label="Import Emails" @click="uploadEmailFn()" />
 			</div>
 		</TopBar>
 

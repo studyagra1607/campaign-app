@@ -9,7 +9,9 @@
 </template>
 
 <script setup>
-
+import { useAuthStore } from '@/stores/authStore';
+const authStore = useAuthStore();
+window.onbeforeunload = authStore.checkAuthentication();
 </script>
 
 <style scoped>

@@ -1,6 +1,12 @@
 <template>
     <form @submit.prevent="uploadEmailFn()">
 		<div class="flex flex-col gap-2 mb-4">
+			<label for="category" class="block font-medium text-sm text-gray-700">
+				Select Category
+			</label>
+			<Dropdown id="category" v-model="uploadEmails.category" :options="categoryies" :filter="true" optionValue="id" optionLabel="value" placeholder="Select Category" />
+		</div>
+		<div class="flex flex-col gap-2 mb-4">
 			<label for="file" class="block font-medium text-sm text-gray-700">
 				Upload
 			</label>
@@ -35,7 +41,7 @@
 				</div>
 				<div class="text-[.68rem] mt-1" v-if="visibleOnec">
 					<i class="pi pi-exclamation-circle text-[.6rem]"></i>
-					Upload a valid file in CSV, XLS, or XLSX format
+					Upload a valid file in CSV, XLS, or XLSX format.
 				</div>
 			</div>
 			<span class="input-error-msg" v-if="errors?.file" v-html="errors?.file[0]"></span>
@@ -61,6 +67,8 @@ const fileErrors = ref([]);
 const fileLimit = ref(1);
 
 const uploadEmails = ref({});
+
+const categoryies = ref([]);
 
 const uploadEmailFn = async () => {
 	loading.value = true;

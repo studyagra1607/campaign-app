@@ -9,7 +9,7 @@
 
 :disabled{
     @apply
-    cursor-not-allowed
+    cursor-wait
     !important
 }
 

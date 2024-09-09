@@ -25,7 +25,6 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   const logout = async (mode) => {
-    await axiosInstance.post('logout');
     isAuthenticated.value = false;
     localStorage.removeItem(tokenKey);
     window.open(`/login${'?'+mode}`, '_self');
