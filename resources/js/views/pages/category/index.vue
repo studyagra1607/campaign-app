@@ -1,8 +1,8 @@
 <template>
     <div class="main-box">
 
-		<Dialog :header="'Add Category'" v-model:visible="displaySaveCategory" :draggable="false" modal :style="{ width: '25vw' }">
-			<SaveCategory @closeModal="hideHandler(), filterData()" />
+		<Dialog :header="!categoryId ? 'Add Category' : 'Edit Category'" v-model:visible="displaySaveCategory" :draggable="false" modal :style="{ width: '25vw' }">
+			<SaveCategory :categoryId="categoryId" @closeModal="hideHandler(), filterData()" />
 		</Dialog>
 		
 		<TopBar>
@@ -15,8 +15,7 @@
 				class="p-datatable-gridlines"
 				dataKey="id"
 				:rowHover="true"
-				:loading="loading"
-				:value="categories"
+				:value="categories.data"
 				:pt="{
 					tableContainer: 'scroll_bar_none'
 				}"
@@ -27,24 +26,21 @@
 						</div>
 					</template>
 
-					<template #loading>
-						<div class="text-center">
-							Loading data. Please wait.
-						</div>
-					</template>
-
 					<Column header="Name">
 						<template #body v-if="isSkeleton">
 							<Skeleton></Skeleton>
 						</template>
 						<template #body="{ data }" v-else>
-							Happy Birthday Dear!
+							{{ data.name }}
 						</template>
 					</Column>
 
 					<Column header="Actions" class="w-[25%]">
 						<template #body v-if="isSkeleton">
-							<Skeleton></Skeleton>
+							<div class="flex">
+								<Skeleton size="2rem" class="mr-2"></Skeleton>
+								<Skeleton size="2rem" class="mr-2"></Skeleton>
+							</div>
 						</template>
 						<template #body="{ data }" v-else>
 							<div class="inline-flex flex-wrap gap-2">
@@ -62,42 +58,55 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useConfirm } from "primevue/useconfirm";
+import useCategory from "@/services/CategoryService";
 import SaveCategory from "./save.vue";
 
 const confirm = useConfirm();
 
+const { errors, categories, getCategories, deleteCategory } = useCategory();
+
 const isSkeleton = ref(false);
 const loading = ref(false);
 
+const categoryId = ref(null);
+
 const displaySaveCategory = ref(false);
 
-const categories = ref([
-	{
-		id: 1
-	},
-]);
+onMounted(async () => {
+	isSkeleton.value = true;
+	await getCategories();
+	isSkeleton.value = false;
+});
 
 const saveCategoryFn = (id) => {
 	displaySaveCategory.value = true;
+	categoryId.value = id;
 };
 
 const deleteCategoryFn = (id) => {
     confirm.require({
-        accept: () => {
-			staticToast({msg: "Deleted successfully!", severity: 'contrast'});
+        accept: async () => {
+			await deleteCategory(id);
+			await closeModal();
         },
     });
 };
 
 const filterData = async () => {
 	isSkeleton.value = true;
+	await getCategories();
 	isSkeleton.value = false;
 };
 
 const hideHandler = async () => {
 	displaySaveCategory.value = false;
+};
+
+const closeModal = async () => {
+	await hideHandler();
+	await filterData();
 };
 </script>
 

@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\CampaignController;
-use App\Http\Controllers\EListController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\TemplateController;
 use Illuminate\Http\Request;
@@ -29,9 +29,9 @@ Route::get('/check-auth', function () {
     ]);
 });
 
-Route::middleware('auth')->group(function () {
-    Route::resource('list', EListController::class);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::resource('category', CategoryController::class);
+    Route::resource('emails', EmailController::class);
+    Route::resource('template', TemplateController::class);
     Route::resource('campaign', CampaignController::class);
-    Route::resource('templates', TemplateController::class);
-    Route::resource('email', EmailController::class);
 });

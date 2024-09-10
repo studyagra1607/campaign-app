@@ -8,15 +8,87 @@ export default function useCategory() {
 
     const errors = ref([]);
 
+    const category = ref({});
+
     const categories = ref([]);
-    
-    const storeCategory = async (data) => {
+
+    const getCategories = async (params) => {
         errors.value = [];
         try {
             
-            let response = await axiosInstance.post('/api/category', data);
+            let { data } = await axiosInstance.get('/api/category', {params: params});
 
-            if(response.data.status){
+            categories.value = data.categories;
+            
+            if(data?.status){
+                // emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+
+    const getCategory = async (id, params) => {
+        errors.value = [];
+        try {
+            
+            let { data } = await axiosInstance.get(`/api/category/${id}`, {params: params});
+            
+            category.value = data.category;
+            
+            if(data?.status){
+                // emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+    
+    const storeCategory = async (params) => {
+        errors.value = [];
+        try {
+            
+            let { data } = await axiosInstance.post('/api/category', params);
+
+            category.value = data.category;
+            
+            if(data?.status){
+                emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+
+    const updateCategory = async (id, params) => {
+        errors.value = [];
+        try {
+            
+            let { data } = await axiosInstance.put(`/api/category/${id}`, {}, {params: params});
+            
+            category.value = data.category;
+            
+            if(data?.status){
+                emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+
+    const deleteCategory = async (id, params) => {
+        errors.value = [];
+        try {
+            
+            let { data } = await axiosInstance.delete(`/api/category/${id}`, {params: params});
+            
+            // category.value = data.category;
+            
+            if(data?.status){
                 emit('closeModal');
             };
 
@@ -27,7 +99,12 @@ export default function useCategory() {
 
     return {
         errors,
+        category,
         categories,
+        getCategories,
+        getCategory,
         storeCategory,
+        updateCategory,
+        deleteCategory,
     };
 }

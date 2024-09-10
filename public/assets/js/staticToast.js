@@ -33,7 +33,7 @@ const staticToast = ({msg, icon, severity, duration} = {}) => {
     toastContainer.insertAdjacentHTML('beforeend', template);
     setTimeout(() => {
         staticToastRemove(toast_id);
-    }, duration ?? 5000);
+    }, duration ?? 10000);
 };
 const staticToastRemove = (toast_id) => {
     let ele = document.querySelector(`[data-static-toast="${toast_id}"]`);

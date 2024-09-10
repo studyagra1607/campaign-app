@@ -10,24 +10,36 @@
 			</span>
 		</div>
 		<div class="mb-4">
-			<Button type="submit" label="Add Category" class="min-w-28" :loading="loading" :disabled="loading" />
+			<Button type="submit" :label="!categoryId ? 'Add Category' : 'Edit Category'" class="min-w-28" :loading="loading" :disabled="loading" />
 		</div>
 	</form>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, defineProps , onMounted, onBeforeMount } from "vue";
 import useCategory from "@/services/CategoryService";
 
-const { errors, storeCategory } = useCategory();
+const props = defineProps({
+	categoryId: Number,
+})
+
+const { errors, category, getCategory, storeCategory, updateCategory } = useCategory();
 
 const loading = ref(false);
 
-const category = ref({});
+onBeforeMount(async () => {
+	if(props.categoryId){
+		await getCategory(props.categoryId);
+	};
+});
 
 const saveCategoryFn = async () => {
 	loading.value = true;
-	await storeCategory(category.value);
+	if(!props.categoryId){
+		await storeCategory(category.value);
+	}else{
+		await updateCategory(props.categoryId, category.value);
+	};
 	loading.value = false;
 };
 
