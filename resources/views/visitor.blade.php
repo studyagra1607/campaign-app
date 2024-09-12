@@ -22,7 +22,7 @@
     <div id="app"></div>
 
     <script src="{{ config('app.url') }}/assets/js/staticToast.js"></script>
-    
+
     @vite('resources/js/app.js')
     
 </body>

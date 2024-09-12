@@ -72,8 +72,7 @@ export const handleErrorResponse = (e) => {
             message: 'An error occurred. Please try again later.',
             js: true
         };
-    };
-    if(data.js){
+        console.log("error msg: ", data.message);
         staticToast({msg: data.message, severity: 'warn'});
     };
     return data;
