@@ -1,26 +1,33 @@
 import router from '@/routes';
-
-const env = import.meta.env;
-
+import { getCurrentInstance } from 'vue';
 
 
-// router =============================
 
+// Env =============================
+export const $env = () => {
+    return getCurrentInstance()?.appContext?.config?.globalProperties?.$env
+};
+
+
+
+// IsCurrentRoute =============================
 export const isCurrentRoute = (routeName) => {
     return router.currentRoute.value.name === routeName;
-}
+};
 
+
+
+// IsActiveNav =============================
 export const isActiveNav = (routeNames) => {
     return routeNames.includes(router.currentRoute.value.name);
-}
+};
 
 
 
-// metaInfo =============================
-
+// MetaInfo =============================
 export const metaInfo = ({$title, $description, $keywords} = {}) => {
 
-    const appName = env.VITE_APP_NAME;
+    const appName = $env()?.VITE_APP_NAME;
 
     let title = document.querySelector('title');
     let metaTitle = document.querySelector('meta[name=title]');
@@ -32,12 +39,11 @@ export const metaInfo = ({$title, $description, $keywords} = {}) => {
     metaDescription.setAttribute('content', `${$description ?? appName}`);
     metaKeywords.setAttribute('content', `${$keywords ?? appName}`);
 
-}
+};
 
 
 
-// handleErrorResponse =============================
-
+// HandleErrorResponse =============================
 export const handleErrorResponse = (e) => {
     let data = null;
     if (e.data || e.data == '') {
@@ -71,26 +77,28 @@ export const handleErrorResponse = (e) => {
         staticToast({msg: data.message, severity: 'warn'});
     };
     return data;
-}
+};
 
 
 
 // FormData =============================
-export const formData = (data, ...fileKeys) => {
-    let  form = new FormData();
-    let keys = Object.keys(data);
+export const formData = ({params, method}, ...fileKeys) => {
+    const invalidTokens = ['', null, 'null', undefined, 'undefined', false, 'false'];
+    let  data = new FormData();
+    method ? data.append('_method', method) : null;
+    let keys = Object.keys(params);
     keys.forEach((key) => {
         if(fileKeys.includes(key)){
-            if(data[key]?.length > 0){
-                data[key].forEach((value) => {
-                    form.append(`${key}[]`, value);
+            if(params[key]?.length > 0){
+                params[key].forEach((value) => {
+                    !invalidTokens.includes(value) ? data.append(`${key}[]`, value) : null;
                 });
             }else{
-                form.append(key, data[key]);
+                !invalidTokens.includes(params[key]) ? data.append(key, params[key]) : null;
             };
         }else{
-            form.append(key, data[key]);
+            data.append(key, params[key]);
         };
     });
-    return form;
+    return data;
 };

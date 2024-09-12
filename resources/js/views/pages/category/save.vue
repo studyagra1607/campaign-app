@@ -16,18 +16,18 @@
 </template>
 
 <script setup>
-import { ref, defineProps , onMounted, onBeforeMount } from "vue";
+import { ref, defineProps , onMounted } from "vue";
 import useCategory from "@/services/CategoryService";
 
 const props = defineProps({
 	categoryId: Number,
-})
+});
 
 const { errors, category, getCategory, storeCategory, updateCategory } = useCategory();
 
 const loading = ref(false);
 
-onBeforeMount(async () => {
+onMounted(async () => {
 	if(props.categoryId){
 		await getCategory(props.categoryId);
 	};

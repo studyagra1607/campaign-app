@@ -15,6 +15,8 @@ import TableWrapper from '@/views/inc/TableWrapper.vue';
 const Vue = createApp(App);
 const pinia = createPinia();
 
+Vue.config.globalProperties.$env = import.meta.env;
+
 Vue.component('TopBar', TopBar);
 Vue.component('TableWrapper', TableWrapper);
 
@@ -28,4 +30,4 @@ Vue.use(router);
 Vue.use(ToastService);
 Vue.use(DialogService);
 Vue.use(ConfirmationService);
-Vue.mount('#app')
+Vue.mount('#app');

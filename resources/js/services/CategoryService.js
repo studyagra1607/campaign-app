@@ -1,6 +1,6 @@
 import { ref, getCurrentInstance } from "vue";
 import axiosInstance from '@/services/axiosInstance.js';
-import { handleErrorResponse } from "@/services/helpers.js";
+import { formData, handleErrorResponse } from "@/services/helpers.js";
 
 export default function useCategory() {
 
@@ -67,7 +67,7 @@ export default function useCategory() {
         errors.value = [];
         try {
             
-            let { data } = await axiosInstance.put(`/api/category/${id}`, {}, {params: params});
+            let { data } = await axiosInstance.post(`/api/category/${id}`, formData({params: params, method: 'put'}));
             
             category.value = data.category;
             
@@ -84,7 +84,7 @@ export default function useCategory() {
         errors.value = [];
         try {
             
-            let { data } = await axiosInstance.delete(`/api/category/${id}`, {params: params});
+            let { data } = await axiosInstance.delete(`/api/category/${id}`);
             
             // category.value = data.category;
             

@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->string('file_name')->nullable();
-            $table->string('hash_path')->nullable();
+            $table->string('file_path')->nullable();
+            $table->text('hash')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->on('users')->references('id')->onDelete('cascade');
             $table->timestamps();

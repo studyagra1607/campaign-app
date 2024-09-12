@@ -4,18 +4,23 @@
 			<label for="name" class="block font-medium text-sm text-gray-700">
 				Enter Name
 			</label>
-			<InputText id="name" v-model="templatefile.name" placeholder="Enter Name" />
+			<InputText id="name" v-model="template.name" placeholder="Enter Name" />
+			<span class="input-error-msg" v-if="errors?.name">
+				{{ errors.name[0] }}
+			</span>
 		</div>
 		<div class="flex flex-col gap-2 mb-4">
 			<label for="file" class="block font-medium text-sm text-gray-700">
 				Upload Template
 			</label>
 			<div class="file-dropdown">
-				<FileUpload :multiple="true" @select="($event) => templatefile.file = $event.files[0]">
+				<FileUpload accept=".htm,.html" :fileLimit="fileLimit" :multiple="true">
 					<template #header="{ chooseCallback }">
 						<div ref="chooseFiles" @click="chooseCallback()"></div>
 					</template>
-					<template #content="{ files, removeFileCallback }">
+					<template #content="{ messages, files, removeFileCallback }">
+						{{ setSelectedFiles(files) }}
+						{{ setFileErrors(messages) }}
 						<div v-if="files.length > 0" class="flex flex-col gap-1">
 							<div v-for="(file, index) of files" :key="index" class="flex flex-wrap items-center justify-between bg-gray-950 text-gray-100 rounded-md px-3 p-1">
 								<div class="inline-flex flex-col justify-center">
@@ -23,7 +28,7 @@
 									<span class="text-[.75rem] pb-1 mt-[.03rem] text-gray-300">{{ formatSize(file.size) }}</span>
 								</div>
 								<div>
-									<Button icon="pi pi-times" iconClass="font-semibold" class="btn-squre bg-gray-50 text-gray-950 hover:bg-gray-200" @click="onRemoveTemplatingFile(file, removeFileCallback, index)" />
+									<Button icon="pi pi-times" iconClass="font-semibold" class="btn-squre bg-gray-50 text-gray-950 hover:bg-gray-200" @click="removeFileCallback(index)" />
 								</div>
 							</div>
 						</div>
@@ -32,24 +37,49 @@
 						</div>
 					</template>
 				</FileUpload>
+				<div class="flex flex-col gap-2 mt-3" v-if="fileErrors.length > 0">
+					<span v-for="(data, index) in fileErrors" :key="index" class="block text-xs font-normal rounded-md border border-red-600 bg-red-100 text-red-600 px-2 py-1">
+						{{ data }}
+					</span>
+				</div>
 			</div>
+			<span class="input-error-msg" v-if="errors?.file" v-html="errors?.file[0]"></span>
 		</div>
 		<div class="mb-4">
-			<Button type="submit" label="Add Template" class="min-w-28" />
+			<Button type="submit" label="Add Template" class="min-w-28" :loading="loading" :disabled="loading || template?.file?.length > fileLimit" />
 		</div>
 	</form>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, defineProps, onMounted } from "vue";
+import useTemplate from "@/services/TemplateService";
+
+const props = defineProps({
+	templateId: Number,
+});
+
+const { errors, template, getTemplate, updateTemplate, storeTemplate } = useTemplate();
 
 const loading = ref(false);
 
-const templatefile = ref({});
+const fileErrors = ref([]);
+
+const fileLimit = ref(1);
+
+onMounted(async () => {
+	if(props.templateId){
+		await getTemplate(props.templateId);
+	};
+});
 
 const saveTemplateFn = async () => {
 	loading.value = true;
-	console.log(templatefile.value);
+	if(!props.templateId){
+		await storeTemplate(template.value);
+	}else{
+		await updateTemplate(props.templateId, template.value);
+	};
 	loading.value = false;
 };
 
@@ -73,6 +103,14 @@ const sortName = (name, start, end) => {
     else{
         return name;
     };
+};
+
+const setSelectedFiles = (files) => {
+	template.value.file = files[0];
+};
+
+const setFileErrors = (msg) => {
+	fileErrors.value = msg;
 };
 </script>
 

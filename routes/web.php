@@ -27,7 +27,7 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-Route::get('/files/{filename}', [FileController::class, 'show'])->where('filename', '.*')->name('file.show');
+Route::get('/file/{hash}', [FileController::class, 'show'])->name('file.show');
 
 Route::get('/{any}', function () {
     return view('visitor');

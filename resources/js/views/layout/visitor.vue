@@ -26,14 +26,14 @@
         </template>
     </ConfirmDialog>
     
-    <form method="POST" action="/logout">
+    <form method="POST" action="/logout" v-if="authStore.isAuthenticated">
         <input type="hidden" name="_token" :value="authStore.csrf_token" autocomplete="off">
         <Button type="submit" icon="pi pi-exclamation-circle" class="fixed right-10 bottom-9" />
     </form>
     
     <div class="logo">
         <router-link :to="{name : 'campaign'}">
-            {{ env.VITE_APP_NAME }}   
+            {{ $env?.VITE_APP_NAME }}
         </router-link>
     </div>
 
@@ -51,7 +51,6 @@
 import { ref } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import SideMenu from '@/views/inc/SideMenu.vue';
-const env = import.meta.env;
 const authStore = useAuthStore();
 </script>
 

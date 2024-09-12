@@ -8,7 +8,7 @@
 		</div>
 		<div class="flex flex-col gap-2 mb-4">
 			<label for="file" class="block font-medium text-sm text-gray-700">
-				Upload
+				Upload CSV or File
 			</label>
 			<div class="file-dropdown">
 				<FileUpload accept=".xls,.xlsx,.csv" :fileLimit="fileLimit" :multiple="true">
