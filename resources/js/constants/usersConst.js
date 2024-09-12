@@ -1,4 +1,4 @@
-export const usersConstStatus = [
+export const constUsersStatus = [
     {
         id: 1,
         key: 'all',
