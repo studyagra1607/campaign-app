@@ -7,13 +7,13 @@
 						<label for="category" class="block font-medium text-sm text-gray-700">
 							Selected Category
 						</label>
-						<InputText type="text" placeholder="Category Name" class="pointer-events-none" readonly />
+						<InputText type="text" :placeholder="campaign?.category?.name" class="pointer-events-none" readonly />
 					</div>
 					<div class="flex flex-col gap-2 mb-4">
 						<label for="template" class="block font-medium text-sm text-gray-700">
 							Selected Template
 						</label>
-						<InputText type="text" placeholder="Template Name" class="pointer-events-none" readonly />
+						<InputText type="text" :placeholder="campaign?.template?.name" class="pointer-events-none" readonly />
 					</div>
 					<div class="flex flex-col gap-2 mb-4">
 						<label class="block font-medium text-sm text-gray-700 mb-1">
@@ -58,7 +58,9 @@
 				</div>
 				<div class="w-[50%] flex">
 					<div class="w-full rounded-md bg-gray-100 p-3">
-						<iframe :src="campaign.file" frameborder="0" scrolling="no" class="w-full h-full rounded-md"></iframe>
+						{{ campaign?.template?.name }}
+						<!-- <iframe :src="$env.VITE_APP_URL+'/file/'+campaign?.template?.hash" frameborder="0" scrolling="no" class="w-full h-full rounded-md"></iframe> -->
+						<iframe src="" frameborder="0" scrolling="no" class="w-full h-full rounded-md"></iframe>
 					</div>
 				</div>
 			</div>
@@ -67,14 +69,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, defineProps, onMounted } from "vue";
+import useCampaign from "@/services/CampaignService";
+
+const props = defineProps({
+    campaignId: Number
+});
+
+const { errors, campaign, getCampaign } = useCampaign();
 
 const loading = ref(false);
 
-const catgories = ref([]);
-const tempates = ref([]);
-
-const campaign = ref({});
+onMounted(async () => {
+	loading.value = true;
+	if(props.campaignId){
+		await getCampaign(props.campaignId);
+	};
+	loading.value = false;
+});
 
 const runCampaignFn = async () => {
 	loading.value = true;

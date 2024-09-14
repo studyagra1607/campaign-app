@@ -20,6 +20,11 @@ class ExistsWithLoginUserRule implements Rule
 
     public function passes($attribute, $value)
     {
+
+        if(gettype($value) === 'string'){
+            $value = explode(",", $value);
+        };
+        
         $query = DB::table($this->table)->whereIn('id', $value);
         
         if (!$this->ignoreUser) {

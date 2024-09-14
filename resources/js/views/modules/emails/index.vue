@@ -118,8 +118,8 @@
 							<template #body v-if="isSkeleton">
 								<Skeleton></Skeleton>
 							</template>
-							<template #body="{ data }" v-else>
-								<ToggleSwitch v-model="data.status" @change="changeStatusFn(data)"/>
+							<template #body="{ data, index }" v-else>
+								<ToggleSwitch v-model="data.status" @change="changeStatusFn(data, index)"/>
 							</template>
 						</Column>
 
@@ -219,8 +219,9 @@ const changeCategoryFn = async (data, index) => {
 	emails.value.data[index] = email.value;
 };
 
-const changeStatusFn = async (data) => {
+const changeStatusFn = async (data, index) => {
 	await updateEmail(data.id, data);
+	emails.value.data[index] = email.value;
 };
 
 const filterData = async () => {

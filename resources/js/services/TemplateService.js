@@ -12,6 +12,8 @@ export default function useTemplate() {
 
     const templates = ref([]);
 
+    const all_templates = ref([]);
+
     const getTemplates = async (params) => {
         errors.value = [];
         try {
@@ -97,14 +99,33 @@ export default function useTemplate() {
         };
     }
 
+    const getAllTemplates = async (params) => {
+        errors.value = [];
+        try {
+            
+            let { data } = await axiosInstance.get('/api/template/all', {params: params});
+
+            all_templates.value = data.all_templates;
+            
+            if(data?.status){
+                // emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+
     return {
         errors,
         template,
         templates,
+        all_templates,
         getTemplates,
         getTemplate,
         storeTemplate,
         updateTemplate,
         deleteTemplate,
+        getAllTemplates,
     };
 }

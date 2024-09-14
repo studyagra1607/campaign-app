@@ -23,7 +23,6 @@
 :disabled{
     @apply
     cursor-wait
-    !important
 }
 
 .input-error-msg{

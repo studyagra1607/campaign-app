@@ -42,7 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('emails', EmailController::class);
 
     Route::prefix('template')->name('template.')->group(function(){
-        // Route::get('/all', [TemplateController::class, 'getAllTemplates'])->name('all');
+        Route::get('/all', [TemplateController::class, 'getAllTemplates'])->name('all');
     });
     Route::resource('template', TemplateController::class);
 

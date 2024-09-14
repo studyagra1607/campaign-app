@@ -1,5 +1,7 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import { format } from "date-fns";
+import { handleErrorResponse } from '@/services/helpers';
 import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';
 import DialogService from 'primevue/dialogservice';
@@ -16,6 +18,15 @@ const Vue = createApp(App);
 const pinia = createPinia();
 
 Vue.config.globalProperties.$env = import.meta.env;
+Vue.config.globalProperties.$format = (date, type) => {
+    try {
+        date = formatDateWithoutTimezone(date);
+        date = new Date(date);
+        return format(date, type ?? 'dd-MM-yyyy');
+    } catch (e) {
+        handleErrorResponse(e);
+    };
+};
 
 Vue.component('TopBar', TopBar);
 Vue.component('TableWrapper', TableWrapper);

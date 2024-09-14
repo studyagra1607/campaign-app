@@ -15,7 +15,7 @@ class UniqueWithLoginUserRule implements Rule
     protected $ignoreUser;
     protected $value;
     
-    public function __construct($table, $column, $model, $ignoreId = null, $ignoreUser = true)
+    public function __construct($table, $column, $model, $ignoreId = null, $ignoreUser = false)
     {
         $this->table = $table;
         $this->column = $column;
@@ -34,7 +34,7 @@ class UniqueWithLoginUserRule implements Rule
             $query->where('id', '!=', $this->ignoreId);
         }
         
-        if ($this->ignoreUser) {
+        if (!$this->ignoreUser) {
             $query->where('user_id', Auth::id());
         };
 

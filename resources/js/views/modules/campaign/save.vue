@@ -7,25 +7,28 @@
 						<label for="title" class="block font-medium text-sm text-gray-700">
 							Enter Title
 						</label>
-						<InputText id="title" v-model="campaign.title" placeholder="Enter Title" />
+						<InputText id="title" v-model="campaign.name" placeholder="Enter Title" />
+						<span class="input-error-msg" v-if="errors?.name">
+							{{ errors.name[0] }}
+						</span>
 					</div>
 					<div class="flex flex-col gap-2 mb-4">
 						<label for="subject" class="block font-medium text-sm text-gray-700">
 							Enter Subject
 						</label>
-						<InputText id="subject" v-model="campaign.subject" placeholder="Enter Subject" disabled />
+						<InputText id="subject" v-model="campaign.subject" placeholder="Enter Subject" class="cursor-not-allowed" disabled />
 					</div>
 					<div class="flex flex-col gap-2 mb-4">
 						<label for="email" class="block font-medium text-sm text-gray-700">
 							Enter Email
 						</label>
-						<InputText id="email" v-model="campaign.email" placeholder="Enter Email" disabled />
+						<InputText id="email" v-model="campaign.email" placeholder="Enter Email" class="cursor-not-allowed" disabled />
 					</div>
 					<div class="flex flex-col gap-2 mb-4">
 						<label for="time" class="block font-medium text-sm text-gray-700">
 							Schedule Time
 						</label>
-						<DatePicker id="time" v-model="campaign.time" placeholder="Schedule Time" fluid showTime hourFormat="12" dateFormat="dd-M-yy," disabled />
+						<DatePicker id="time" v-model="campaign.time" placeholder="Schedule Time" fluid showTime hourFormat="12" dateFormat="dd-M-yy," inputClass="cursor-not-allowed" disabled />
 						<div class="flex flex-wrap gap-4 mt-2 mb-3">
 							<label class="flex items-center gap-2 text-sm cursor-not-allowed">
 								<RadioButton disabled v-model="campaign.timetype" name="timetype" value="always" /> Always
@@ -50,7 +53,7 @@
 						</div>
 					</div>
 					<div class="mb-4">
-						<Button type="submit" :loading="loading" :label="!campaignId ? 'Create' : 'Save'" class="min-w-28" />
+						<Button type="submit" :label="!campaignId ? 'Add Campaign' : 'Edit Campaign'" class="min-w-28" :loading="loading" :disabled="loading" />
 					</div>
 				</div>
 				<div class="w-[50%] flex flex-col">
@@ -58,16 +61,24 @@
 						<label for="category" class="block font-medium text-sm text-gray-700">
 							Select Category
 						</label>
-						<Dropdown id="category" v-model="campaign.category" :options="categoryies" :filter="true" optionValue="id" optionLabel="value" placeholder="Select Category" />
+						<Select id="category" v-model="campaign.category_id" :options="all_categories" :filter="true" optionValue="id" optionLabel="name" placeholder="Select Category" />
+						<span class="input-error-msg" v-if="errors?.category_id">
+							{{ errors.category_id[0] }}
+						</span>
 					</div>
 					<div class="flex flex-col gap-2 mb-4">
 						<label for="template" class="block font-medium text-sm text-gray-700">
 							Select Template
 						</label>
-						<Dropdown id="template" v-model="campaign.template" :options="tempates" :filter="true" optionValue="id" optionLabel="value" placeholder="Select Template" />
+						<Select id="template" v-model="campaign.template_id" :options="all_templates" :filter="true" optionValue="id" optionLabel="name" placeholder="Select Template" @change="selectTemplateFn()" />
+						<span class="input-error-msg" v-if="errors?.category_id">
+							{{ errors.category_id[0] }}
+						</span>
 					</div>
 					<div class="grow w-full rounded-md bg-gray-100 p-3">
-						<iframe :src="campaign.file" frameborder="0" scrolling="no" class="w-full h-full rounded-md"></iframe>
+						{{ template.name }}
+						<!-- <iframe :src="$env.VITE_APP_URL+'/file/'+template.hash" frameborder="0" scrolling="no" class="w-full h-full rounded-md"></iframe> -->
+						<iframe src="" frameborder="0" scrolling="no" class="w-full h-full rounded-md"></iframe>
 					</div>
 				</div>
 			</div>
@@ -77,29 +88,48 @@
 
 <script setup>
 import { ref, onMounted, defineProps } from "vue";
+import useCategory from "@/services/CategoryService";
+import useTemplate from "@/services/TemplateService";
 import useCampaign from "@/services/CampaignService";
-
-const { errors, storeCampaign } = useCampaign();
 
 const props = defineProps({
     campaignId: Number
-})
+});
+
+const { all_categories, getAllCategories } = useCategory();
+const { template, getTemplate, all_templates, getAllTemplates } = useTemplate();
+const { errors, campaign, getCampaign, storeCampaign, updateCampaign } = useCampaign();
 
 const loading = ref(false);
 
-const categoryies = ref([]);
-const tempates = ref([]);
-const campaign = ref({});
+campaign.value = {
+	status: true,
+};
 
 onMounted(async () => {
+	loading.value = true;
+	await getAllTemplates();
+	await getAllCategories();
 	if(props.campaignId){
-		console.log(props.campaignId);
+		await getCampaign(props.campaignId);
+		await getTemplate(campaign.value.template_id);
 	};
+	loading.value = false;
 });
 
 const saveCampaignFn = async () => {
 	loading.value = true;
-	await storeCampaign();
+	if(!props.campaignId){
+		await storeCampaign(campaign.value);
+	}else{
+		await updateCampaign(props.campaignId, campaign.value);
+	};
+	loading.value = false;
+};
+
+const selectTemplateFn = async () => {
+	loading.value = true;
+	await getTemplate(campaign.value.template_id);
 	loading.value = false;
 };
 </script>

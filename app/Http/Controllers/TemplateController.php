@@ -142,4 +142,27 @@ class TemplateController extends Controller
             ], 400);
         }
     }
+
+    public function getAllTemplates()
+    {
+        try {
+
+            $all_templates = [];
+
+            Template::loginUser()->chunk(100, function ($chunk) use (&$all_templates) {
+                $all_templates = array_merge($all_templates, $chunk->toArray());
+            });
+            
+            return response()->json([
+                'all_templates' => $all_templates,
+                'status' => true,
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage().$e->getLine(),
+                'status' => false,
+            ], 400);
+        }
+    }
 }

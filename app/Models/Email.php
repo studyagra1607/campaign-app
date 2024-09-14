@@ -54,10 +54,10 @@ class Email extends Model
         return $query->create($data);
     }
 
-     public function getCategoryIdsAttribute()
-     {
+    public function getCategoryIdsAttribute()
+    {
         return $this->categories->pluck('id')->toArray();
-     }
+    }
 
     protected static function boot()
     {
