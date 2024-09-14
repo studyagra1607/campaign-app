@@ -12,6 +12,7 @@ class Template extends Model
     protected $fillable = [
         'name',
         'file_name',
+        'file_slug',
         'file_path',
         'hash',
         'user_id',
@@ -27,14 +28,14 @@ class Template extends Model
         return $this->hasMany(Campaign::class);
     }
 
-    public function scopeActive()
+    public function scopeActive($query)
     {
-        return $this->where('status', 1);
+        return $query->where('status', 1);
     }
 
-    public function scopeLoginUser()
+    public function scopeLoginUser($query)
     {
-        return $this->where('user_id', auth()->id());
+        return $query->where('user_id', auth()->id());
     }
     
     public function scopeCreateWithLoginUser($query, $data)

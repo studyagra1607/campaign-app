@@ -98,7 +98,8 @@ class CategoryController extends Controller
     {
         try {
 
-            $category = Category::loginUser()->find($id)->update($request->except('user_id'));
+            $category = Category::loginUser()->find($id);
+            $category->update($request->except('user_id'));
 
             return response()->json([
                 'category' => $category,
@@ -138,4 +139,32 @@ class CategoryController extends Controller
             ], 400);
         }
     }
+
+    /**
+     * There custom functions =========================================
+     */
+
+    public function getAllCategories()
+    {
+        try {
+
+            $all_categories = [];
+
+            Category::loginUser()->chunk(100, function ($chunk) use (&$all_categories) {
+                $all_categories = array_merge($all_categories, $chunk->toArray());
+            });
+            
+            return response()->json([
+                'all_categories' => $all_categories,
+                'status' => true,
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage().$e->getLine(),
+                'status' => false,
+            ], 400);
+        }
+    }
+    
 }

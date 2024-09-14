@@ -81,13 +81,13 @@ export const handleErrorResponse = (e) => {
 
 
 // FormData =============================
-export const formData = ({params, method}, ...fileKeys) => {
+export const formData = ({params, method}, ...arrKeys) => {
     const invalidTokens = ['', null, 'null', undefined, 'undefined', false, 'false'];
     let  data = new FormData();
     method ? data.append('_method', method) : null;
     let keys = Object.keys(params);
     keys.forEach((key) => {
-        if(fileKeys.includes(key)){
+        if(arrKeys.includes(key)){
             if(params[key]?.length > 0){
                 params[key].forEach((value) => {
                     !invalidTokens.includes(value) ? data.append(`${key}[]`, value) : null;

@@ -12,6 +12,8 @@ export default function useCategory() {
 
     const categories = ref([]);
 
+    const all_categories = ref([]);
+
     const getCategories = async (params) => {
         errors.value = [];
         try {
@@ -97,14 +99,33 @@ export default function useCategory() {
         };
     }
 
+    const getAllCategories = async (params) => {
+        errors.value = [];
+        try {
+            
+            let { data } = await axiosInstance.get('/api/category/all', {params: params});
+
+            all_categories.value = data.all_categories;
+            
+            if(data?.status){
+                // emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+    
     return {
         errors,
         category,
         categories,
+        all_categories,
         getCategories,
         getCategory,
         storeCategory,
         updateCategory,
         deleteCategory,
+        getAllCategories,
     };
 }

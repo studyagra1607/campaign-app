@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('category_email', function (Blueprint $table) {
 
-            $table->foreignId('category_id')->references('id')->on('categories')->onDelete('cascade');
-            $table->foreignId('email_id')->references('id')->on('emails')->onDelete('cascade');
+            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('email_id')->constrained('emails')->onDelete('cascade');
+            // $table->timestamps(); // Optional: add created_at and updated_at columns
             
         });
     }

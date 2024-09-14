@@ -4,9 +4,13 @@ namespace App\Http\Traits;
 
 trait CsvParser {
 
-    public function CsvToArray($file)
+    public function CsvToArray($file, $getted = false)
     {
-        $content = file_get_contents($file);
+        if(!$getted){
+            $content = file_get_contents($file);
+        }else{
+            $content = $file;
+        };
         $rows = array_map('str_getcsv', explode(PHP_EOL, $content));
         $rowKeys = array_shift($rows);
         $formattedData = [];

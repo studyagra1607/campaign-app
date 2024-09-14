@@ -1,6 +1,6 @@
 import { ref, getCurrentInstance } from "vue";
 import axiosInstance from '@/services/axiosInstance.js';
-import { handleErrorResponse } from "@/services/helpers.js";
+import { formData, handleErrorResponse } from "@/services/helpers.js";
 
 export default function useEmail() {
 
@@ -8,15 +8,107 @@ export default function useEmail() {
 
     const errors = ref([]);
 
+    const email = ref({});
+
     const emails = ref([]);
-    
-    const uploadEmail = async (data) => {
+
+    const getEmails = async (page, page_rows) => {
+        errors.value = [];
+        try {
+
+            let params = {
+                'page': page ?? 1,
+                'page_rows': page_rows ?? 25,
+            };
+            
+            let { data } = await axiosInstance.get('/api/emails', {params: params});
+
+            emails.value = data.emails;
+            
+            if(data?.status){
+                // emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+
+    const getEmail = async (id, params) => {
         errors.value = [];
         try {
             
-            let response = await axiosInstance.post('/api/list', data);
+            let { data } = await axiosInstance.get(`/api/emails/${id}`, {params: params});
+            
+            email.value = data.email;
+            
+            if(data?.status){
+                // emit('closeModal');
+            };
 
-            if(response.data.status){
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+    
+    const storeEmail = async (params) => {
+        errors.value = [];
+        try {
+            
+            let { data } = await axiosInstance.post('/api/emails', params);
+
+            email.value = data.email;
+            
+            if(data?.status){
+                emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+
+    const updateEmail = async (id, params) => {
+        errors.value = [];
+        try {
+
+            let { data } = await axiosInstance.post(`/api/emails/${id}`, formData({params: params, method: 'put'}, 'category_ids'));
+            
+            email.value = data.email;
+            
+            if(data?.status){
+                emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+
+    const deleteEmail = async (id, params) => {
+        errors.value = [];
+        try {
+            
+            let { data } = await axiosInstance.delete(`/api/emails/${id}`);
+            
+            // email.value = data.email;
+            
+            if(data?.status){
+                emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+
+    const uploadEmailCsv = async (params) => {
+        errors.value = [];
+        try {
+            
+            let { data } = await axiosInstance.post(`/api/emails/upload-email-csv`, formData({params: params, method: 'post'}, 'file'));
+            
+            if(data?.status){
                 emit('closeModal');
             };
 
@@ -27,7 +119,13 @@ export default function useEmail() {
 
     return {
         errors,
+        email,
         emails,
-        uploadEmail,
+        getEmails,
+        getEmail,
+        storeEmail,
+        updateEmail,
+        deleteEmail,
+        uploadEmailCsv,
     };
 }

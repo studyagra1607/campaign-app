@@ -10,7 +10,7 @@
 		</TopBar>
 
 		<div class="content-box">
-			<template v-if="false">
+			<template v-if="categories?.data?.length > 0">
 				<TableWrapper>
 					<DataTable
 					class="p-datatable-gridlines"

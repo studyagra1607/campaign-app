@@ -30,8 +30,25 @@ Route::get('/check-auth', function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::prefix('category')->name('category.')->group(function(){
+        Route::get('/all', [CategoryController::class, 'getAllCategories'])->name('all');
+    });
     Route::resource('category', CategoryController::class);
+    
+    Route::prefix('emails')->name('emails.')->group(function(){
+        Route::post('/upload-email-csv', [EmailController::class, 'uploadEmailCsv'])->name('upload-email-csv');
+    });
     Route::resource('emails', EmailController::class);
+
+    Route::prefix('template')->name('template.')->group(function(){
+        // Route::get('/all', [TemplateController::class, 'getAllTemplates'])->name('all');
+    });
     Route::resource('template', TemplateController::class);
+
+    Route::prefix('campaign')->name('campaign.')->group(function(){
+        // Route::get('/all', [CampaignController::class, 'getAllCampaign'])->name('all');
+    });
     Route::resource('campaign', CampaignController::class);
+
 });

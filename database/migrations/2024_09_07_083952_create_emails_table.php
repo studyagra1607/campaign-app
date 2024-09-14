@@ -18,7 +18,7 @@ return new class extends Migration
             $table->boolean('subscribe')->default(1)->nullable();
             $table->boolean('status')->default(1)->nullable();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->on('users')->references('id')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

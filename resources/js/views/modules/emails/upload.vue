@@ -1,10 +1,13 @@
 <template>
-    <form @submit.prevent="uploadEmailFn()">
+    <form @submit.prevent="uploadEmailCsvFn()">
 		<div class="flex flex-col gap-2 mb-4">
 			<label for="category" class="block font-medium text-sm text-gray-700">
 				Select Category
 			</label>
-			<Dropdown id="category" v-model="uploadEmails.category" :options="categoryies" :filter="true" optionValue="id" optionLabel="value" placeholder="Select Category" />
+			<Select id="category" v-model="uploadEmailCsvData.category" :options="all_categories" optionValue="id" optionLabel="name" placeholder="Select Category" @filter="getCategories()" :filter="true" :loading="loading" />
+			<span class="input-error-msg" v-if="errors?.category">
+				{{ errors.category[0] }}
+			</span>
 		</div>
 		<div class="flex flex-col gap-2 mb-4">
 			<label for="file" class="block font-medium text-sm text-gray-700">
@@ -41,13 +44,13 @@
 				</div>
 				<div class="text-[.68rem] mt-1" v-if="visibleOnec">
 					<i class="pi pi-exclamation-circle text-[.6rem]"></i>
-					Upload a valid file in CSV, XLS, or XLSX format.
+					Upload a valid file in CSV, XLS, or XLSX <a :href="$env.VITE_APP_URL+'/assets/sample-email-csv.csv'" class="underline" download="sample-email-csv">sample</a>.
 				</div>
 			</div>
 			<span class="input-error-msg" v-if="errors?.file" v-html="errors?.file[0]"></span>
 		</div>
 		<div class="mb-4">
-			<Button type="submit" label="Upload" class="min-w-28" :loading="loading" :disabled="loading || uploadEmails?.file?.length > fileLimit" />
+			<Button type="submit" label="Upload" class="min-w-28" :loading="loading" :disabled="loading || uploadEmailCsvData?.file?.length > fileLimit" />
 		</div>
 	</form>
 </template>
@@ -55,8 +58,10 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import useEmails from "@/services/EmailService";
+import useCategory from "@/services/CategoryService";
 
-const { errors, uploadEmail } = useEmails();
+const { errors, uploadEmailCsv } = useEmails();
+const { all_categories, getAllCategories } = useCategory();
 
 const loading = ref(false);
 
@@ -66,13 +71,17 @@ const fileErrors = ref([]);
 
 const fileLimit = ref(1);
 
-const uploadEmails = ref({});
+const uploadEmailCsvData = ref({});
 
-const categoryies = ref([]);
-
-const uploadEmailFn = async () => {
+onMounted(async () => {
 	loading.value = true;
-	await uploadEmail(uploadEmails.value);
+	await getAllCategories();
+	loading.value = false;
+});
+
+const uploadEmailCsvFn = async () => {
+	loading.value = true;
+	await uploadEmailCsv(uploadEmailCsvData.value);
 	loading.value = false;
 };
 
@@ -99,7 +108,7 @@ const sortName = (name, start, end) => {
 };
 
 const setSelectedFiles = (files) => {
-	uploadEmails.value.file = files[0];
+	uploadEmailCsvData.value.file = files[0];
 };
 
 const setFileErrors = (msg) => {
