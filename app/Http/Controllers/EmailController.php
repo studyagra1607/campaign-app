@@ -153,6 +153,10 @@ class EmailController extends Controller
         }
     }
 
+    /**
+     * There custom functions =========================================
+     */
+    
     public function uploadEmailCsv(UploadEmailCsvRequest $request)
     {
         try {

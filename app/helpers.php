@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -8,7 +9,7 @@ if (!function_exists('saveFile')) {
 
         if($request->hasFile('file')){
 
-            $method = strtolower($request->_method);
+            $method = strtolower($request->method());
 
             $file = $request->file('file');
             $old_file = $request->file_path;
@@ -24,11 +25,7 @@ if (!function_exists('saveFile')) {
                 Storage::disk('local')->put($full_filepath, file_get_contents($file));
             };
             
-            if(in_array($method, ['put', 'delete'])){
-                if (Storage::disk('local')->exists($old_file)) {
-                    Storage::disk('local')->move($old_file, 'delete/'.$old_file);
-                };
-            };
+            deleteFile($request, $old_file);
             
             $request->merge([
                 'file_name' => $filename,
@@ -39,6 +36,20 @@ if (!function_exists('saveFile')) {
 
         };
 
+    }
+}
+
+if (!function_exists('deleteFile')) {
+    function deleteFile($request, $old_file_path){
+        
+        $method = strtolower($request->method());
+
+        if(in_array($method, ['put', 'delete'])){
+            if (Storage::disk('local')->exists($old_file_path)) {
+                Storage::disk('local')->move($old_file_path, 'delete/'.$old_file_path);
+            };
+        };
+        
     }
 }
 

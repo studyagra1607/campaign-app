@@ -15,7 +15,7 @@ class CategoryController extends Controller
     {
         try {
 
-            $categories = Category::loginUser()->paginate(25);
+            $categories = Category::loginUser()->paginate($request->page_rows);
             
             return response()->json([
                 'categories' => $categories,
@@ -122,13 +122,23 @@ class CategoryController extends Controller
     {
         try {
 
-            $category = Category::loginUser()->find($id);
+            $ids = explode(",", $id);
+            
+            $categories = Category::loginUser()->findMany($ids);
 
-            $category?->delete();
+            if($categories->isNotEmpty()){
+                $categories->each(function ($category) {
+                    $category->delete();
+                });
+                $msg = count($categories) > 1 ? "(" . count($categories) . ") Categories" : "Category";
+            }else{
+                return response()->json([
+                    'message' => 'Category not found!'
+                ], 404);
+            };
 
             return response()->json([
-                // 'category' => $category,
-                'message' => 'Category deleted successfully!',
+                'message' => "$msg deleted successfully!",
                 'status' => true,
             ]);
             

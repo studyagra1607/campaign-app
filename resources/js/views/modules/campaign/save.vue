@@ -108,8 +108,8 @@ campaign.value = {
 
 onMounted(async () => {
 	loading.value = true;
-	await getAllTemplates();
 	await getAllCategories();
+	await getAllTemplates();
 	if(props.campaignId){
 		await getCampaign(props.campaignId);
 		await getTemplate(campaign.value.template_id);

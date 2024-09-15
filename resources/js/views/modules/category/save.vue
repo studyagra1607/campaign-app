@@ -9,8 +9,18 @@
 				{{ errors.name[0] }}
 			</span>
 		</div>
-		<div class="mb-4">
-			<Button type="submit" :label="!categoryId ? 'Add Category' : 'Edit Category'" class="min-w-28" :loading="loading" :disabled="loading" />
+		<div class="grid grid-cols-2 gap-3 mb-1">
+			<label for="status" class="flex items-center justify-between gap-2 font-medium text-sm text-gray-700 bg-gray-50 rounded-md px-2 py-2 cursor-pointer">
+				Active: <ToggleSwitch v-model="category.status" inputId="status" /> 
+			</label>
+			<div class="text-right">
+				<Button type="submit" :label="!categoryId ? 'Add Category' : 'Edit Category'" class="min-w-28" :loading="loading" :disabled="loading" />
+			</div>
+			<div class="col-span-2">
+				<span class="block input-error-msg" v-if="errors?.status">
+					{{ errors.status[0] }}
+				</span>
+			</div>
 		</div>
 	</form>
 </template>
@@ -27,10 +37,16 @@ const { errors, category, getCategory, storeCategory, updateCategory } = useCate
 
 const loading = ref(false);
 
+category.value = {
+	status: true,
+};
+
 onMounted(async () => {
+	loading.value = true;
 	if(props.categoryId){
 		await getCategory(props.categoryId);
 	};
+	loading.value = false;
 });
 
 const saveCategoryFn = async () => {

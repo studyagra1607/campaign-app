@@ -24,7 +24,7 @@ class UploadEmailCsvRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category' => [
+            'category_ids' => [
                 'bail',
                 'required',
                 'array',

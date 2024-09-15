@@ -1,5 +1,5 @@
 <template>
-    <div class="h-14 flex items-center justify-between rounded-md bg-gray-50 p-2 mb-5">
+    <div class="h-14 flex items-center justify-between rounded-md bg-gray-50 p-2 mb-3">
         <Breadcrumb :home="home" :model="items" class="bg-transparent p-0 px-1">
             <template #item="{ item, props }">
                 <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>

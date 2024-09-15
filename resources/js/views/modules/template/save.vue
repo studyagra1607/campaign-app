@@ -42,6 +42,10 @@
 						{{ data }}
 					</span>
 				</div>
+				<div class="text-[.72rem] mt-1" v-if="visibleOnec">
+					<i class="pi pi-exclamation-circle text-[.62rem]"></i>
+					Upload template file format in <b>html</b> or <b>htm</b>.
+				</div>
 			</div>
 			<span class="input-error-msg" v-if="errors?.file" v-html="errors?.file[0]"></span>
 		</div>
@@ -52,7 +56,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, onMounted } from "vue";
+import { ref, defineProps, watch, onMounted } from "vue";
 import useTemplate from "@/services/TemplateService";
 
 const props = defineProps({
@@ -62,6 +66,8 @@ const props = defineProps({
 const { errors, template, getTemplate, updateTemplate, storeTemplate } = useTemplate();
 
 const loading = ref(false);
+
+const visibleOnec = ref(true);
 
 const fileErrors = ref([]);
 
@@ -112,6 +118,13 @@ const setSelectedFiles = (files) => {
 const setFileErrors = (msg) => {
 	fileErrors.value = msg;
 };
+
+watch([errors, fileErrors], ([newErrors, newFileErrors]) => {
+	// (errors.length <= 0) && (fileErrors.length <= 0) 
+    if (newErrors?.length != 0 || newFileErrors?.length != 0) {
+        visibleOnec.value = false;
+    };
+});
 </script>
 
 <style>

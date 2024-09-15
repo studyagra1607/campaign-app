@@ -299,7 +299,7 @@ main{
 .template-preview iframe{
     @apply
     w-full
-    h-[280px]
+    h-[264px]
     rounded-md
     border
     overflow-hidden

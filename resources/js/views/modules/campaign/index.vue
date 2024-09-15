@@ -1,11 +1,11 @@
 <template>
     <div class="main-box">
 
-		<Dialog :header="!campaignId ? 'Add Campaign' : 'Edit Campaign'" v-model:visible="displaySaveCampaign" :draggable="false" modal :style="{ width: '50vw' }">
+		<Dialog :header="!campaignId ? 'Add Campaign' : 'Edit Campaign'" v-model:visible="displaySaveCampaign" :draggable="false" modal style="width: 798px; max-width: 90vw;">
 			<SaveCampaign :campaignId="campaignId" @closeModal="hideHandler(), filterData()" />
 		</Dialog>
 		
-		<Dialog :header="'Campaign Name'" v-model:visible="displayViewCampaign" :draggable="false" modal :style="{ width: '50vw' }">
+		<Dialog :header="'Campaign Name'" v-model:visible="displayViewCampaign" :draggable="false" modal style="width: 742px; max-width: 90vw;">
 			<ViewCampaign :campaignId="campaignId" @closeModal="hideHandler(), filterData()" />
 		</Dialog>
 		

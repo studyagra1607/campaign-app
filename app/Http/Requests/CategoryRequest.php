@@ -25,6 +25,7 @@ class CategoryRequest extends FormRequest
     {
         return [
             'name' => ['bail', 'required', 'string', 'max:255', new TrimedStringRule(), new UniqueWithLoginUserRule('categories', 'name', 'category', $this->route('category'))],
+            'status' => 'boolean',
         ];
     }
 
@@ -45,7 +46,7 @@ class CategoryRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'name' => preg_replace('/\s+/', ' ', trim($this->name)),
+            'status' => setBoolean($this->status),
         ]);
     }
     

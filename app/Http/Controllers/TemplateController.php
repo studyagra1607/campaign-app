@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TemplateRequest;
 use App\Models\Template;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TemplateController extends Controller
 {
@@ -15,7 +16,7 @@ class TemplateController extends Controller
     {
         try {
 
-            $templates = Template::loginUser()->paginate(25);
+            $templates = Template::loginUser()->paginate($request->page_rows);
             
             return response()->json([
                 'templates' => $templates,
@@ -102,7 +103,8 @@ class TemplateController extends Controller
 
             saveFile($request, 'template');
 
-            $template = Template::loginUser()->find($id)->update($request->except('user_id'));
+            $template = Template::loginUser()->find($id);
+            $template->update($request->except('user_id'));
 
             return response()->json([
                 'template' => $template,
@@ -124,14 +126,25 @@ class TemplateController extends Controller
     public function destroy(Request $request, $id)
     {
         try {
-            
-            $template = Template::loginUser()->find($id);
 
-            $template?->delete();
+            $ids = explode(",", $id);
+            
+            $templates = Template::loginUser()->findMany($ids);
+
+            if($templates->isNotEmpty()){
+                $templates->each(function ($template) use($request) {
+                    deleteFile($request, $template->file_path);
+                    $template->delete();
+                });
+                $msg = count($templates) > 1 ? "(" . count($templates) . ") Templates" : "Template";
+            }else{
+                return response()->json([
+                    'message' => 'Template not found!'
+                ], 404);
+            };
 
             return response()->json([
-                // 'template' => $template,
-                'message' => 'Template deleted successfully!',
+                'message' => "$msg deleted successfully!",
                 'status' => true,
             ]);
             
@@ -143,6 +156,10 @@ class TemplateController extends Controller
         }
     }
 
+    /**
+     * There custom functions =========================================
+     */
+    
     public function getAllTemplates()
     {
         try {

@@ -33,7 +33,7 @@
 				{{ errors.email[0] }}
 			</span>
 		</div>
-		<div class="grid grid-cols-2 gap-3 mb-4">
+		<div class="grid grid-cols-2 gap-3 mb-3">
 			<label for="subscribe" class="flex items-center justify-between gap-2 font-medium text-sm text-gray-700 bg-gray-50 rounded-md px-2 py-2 cursor-pointer">
 				Subscribed: <ToggleSwitch v-model="email.subscribe" inputId="subscribe" />
 			</label>
@@ -41,11 +41,10 @@
 				Active: <ToggleSwitch v-model="email.status" inputId="status" /> 
 			</label>
 			<div class="col-span-2">
-				<span class="input-error-msg" v-if="errors?.subscribe">
+				<span class="block input-error-msg" v-if="errors?.subscribe">
 					{{ errors.subscribe[0] }}
 				</span>
-				<br>
-				<span class="input-error-msg" v-if="errors?.status">
+				<span class="block input-error-msg" v-if="errors?.status">
 					{{ errors.status[0] }}
 				</span>
 			</div>

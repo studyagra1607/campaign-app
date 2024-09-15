@@ -4,9 +4,15 @@
 			<label for="category" class="block font-medium text-sm text-gray-700">
 				Select Category
 			</label>
-			<Select id="category" v-model="uploadEmailCsvData.category" :options="all_categories" optionValue="id" optionLabel="name" placeholder="Select Category" @filter="getCategories()" :filter="true" :loading="loading" />
-			<span class="input-error-msg" v-if="errors?.category">
-				{{ errors.category[0] }}
+			<MultiSelect id="category" v-model="uploadEmailCsvData.category_ids" :options="all_categories" optionValue="id" optionLabel="name" placeholder="Select Category" display="chip" :filter="true" :loading="loading"
+			:pt="{
+				label: {
+					class: 'overflow-auto scroll_bar_none',
+				}
+			}"
+			/>
+			<span class="input-error-msg" v-if="errors?.category_ids">
+				{{ errors.category_ids[0] }}
 			</span>
 		</div>
 		<div class="flex flex-col gap-2 mb-4">
@@ -57,11 +63,11 @@
 
 <script setup>
 import { ref, watch, onMounted } from "vue";
-import useEmails from "@/services/EmailService";
 import useCategory from "@/services/CategoryService";
+import useEmails from "@/services/EmailService";
 
-const { errors, uploadEmailCsv } = useEmails();
 const { all_categories, getAllCategories } = useCategory();
+const { errors, uploadEmailCsv } = useEmails();
 
 const loading = ref(false);
 

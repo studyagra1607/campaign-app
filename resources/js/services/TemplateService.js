@@ -14,9 +14,14 @@ export default function useTemplate() {
 
     const all_templates = ref([]);
 
-    const getTemplates = async (params) => {
+    const getTemplates = async (page, page_rows) => {
         errors.value = [];
         try {
+            
+            let params = {
+                'page': page ?? 1,
+                'page_rows': page_rows ?? 25,
+            };
             
             let { data } = await axiosInstance.get('/api/template', {params: params});
 

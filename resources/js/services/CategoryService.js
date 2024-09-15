@@ -14,9 +14,14 @@ export default function useCategory() {
 
     const all_categories = ref([]);
 
-    const getCategories = async (params) => {
+    const getCategories = async (page, page_rows) => {
         errors.value = [];
         try {
+            
+            let params = {
+                'page': page ?? 1,
+                'page_rows': page_rows ?? 25,
+            };
             
             let { data } = await axiosInstance.get('/api/category', {params: params});
 

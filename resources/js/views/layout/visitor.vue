@@ -28,7 +28,7 @@
     
     <form method="POST" action="/logout" v-if="authStore.isAuthenticated">
         <input type="hidden" name="_token" :value="authStore.csrf_token" autocomplete="off">
-        <Button type="submit" icon="pi pi-exclamation-circle" class="fixed right-10 bottom-9" />
+        <Button type="submit" icon="pi pi-exclamation-circle" class="fixed z-10 right-10 bottom-9" />
     </form>
     
     <div class="logo">

@@ -106,7 +106,7 @@ export default function useEmail() {
         errors.value = [];
         try {
             
-            let { data } = await axiosInstance.post(`/api/emails/upload-email-csv`, formData({params: params, method: 'post'}, 'file'));
+            let { data } = await axiosInstance.post(`/api/emails/upload-email-csv`, formData({params: params, method: 'post'}, 'file', 'category_ids'));
             
             if(data?.status){
                 emit('closeModal');

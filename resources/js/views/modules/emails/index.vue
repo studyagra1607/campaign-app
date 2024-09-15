@@ -1,11 +1,11 @@
 <template>
     <div class="main-box">
 
-		<Dialog :header="'Upload Emails'" v-model:visible="displayUploadEmail" :draggable="false" modal :style="{ width: '25vw' }">
+		<Dialog :header="'Upload Emails'" v-model:visible="displayUploadEmail" :draggable="false" modal style="width: 380px; max-width: 90vw;">
 			<UploadEmail @closeModal="hideHandler(), filterData()" />
 		</Dialog>
 		
-		<Dialog :header="!emailId ? 'Add Email' : 'Edit Email'" v-model:visible="displaySaveEmail" :draggable="false" modal :style="{ width: '25vw' }">
+		<Dialog :header="!emailId ? 'Add Email' : 'Edit Email'" v-model:visible="displaySaveEmail" :draggable="false" modal style="width: 392px; max-width: 90vw;">
 			<SaveEmail :emailId="emailId" @closeModal="hideHandler(), filterData()" />
 		</Dialog>
 		

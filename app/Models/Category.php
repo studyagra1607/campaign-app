@@ -9,9 +9,19 @@ class Category extends Model
 {
     use HasFactory;
 
+    protected $appends = [
+        'emails_count',
+        'availables_count',
+    ];
+    
     protected $fillable = [
         'name',
+        'status',
         'user_id',
+    ];
+
+    protected $casts = [
+        'status' => 'boolean',
     ];
     
     public function user()
@@ -38,6 +48,25 @@ class Category extends Model
     {
         $data['user_id'] = auth()->id();
         return $query->create($data);
+    }
+
+    public function getEmailsCountAttribute()
+    {
+        return $this->emails()->count();
+    }
+
+    public function getAvailablesCountAttribute()
+    {
+        return $this->emails()->where('subscribe', 1)->where('status', 1)->count();
+    }
+    
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            $model->name = stringTrim($model->name);
+        });
     }
     
 }
