@@ -27,7 +27,7 @@
             </div>
         </div>
         
-        <script src="{{ config('app.url') }}/assets/js/staticToast.js"></script>
+        <script src="{{ config('app.url') }}/assets/js/static-toast.js"></script>
         
         <script>
             @if (!auth()->check())

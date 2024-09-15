@@ -59,12 +59,12 @@
 
 						</Column>
 						
-						<Column header="Template" class="w-[14%]">
+						<Column header="Template" class="p-1">
 							<template #body v-if="isSkeleton">
 								<Skeleton></Skeleton>
 							</template>
 							<template #body="{ data, index }" v-else>
-								{{ data.template.name }}
+								<iframe :src="$env.VITE_APP_URL+'/file/'+data.template.hash" frameborder="0" scrolling="no" cross-origin="anonymous" onload="iframeObjectFit(this, 600)" class="w-[60px] h-[60px] bg-gray-50"></iframe>
 							</template>
 						</Column>
 						

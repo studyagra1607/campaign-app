@@ -22,7 +22,8 @@
     <div id="app"></div>
 
     <script src="{{ config('app.url') }}/assets/js/date-without-timezone.js"></script>
-    <script src="{{ config('app.url') }}/assets/js/staticToast.js"></script>
+    <script src="{{ config('app.url') }}/assets/js/iframe-object-fit.js"></script>
+    <script src="{{ config('app.url') }}/assets/js/static-toast.js"></script>
 
     @vite('resources/js/app.js')
     

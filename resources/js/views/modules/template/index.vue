@@ -18,12 +18,14 @@
 								<Skeleton class="w-100 min-h-60 mb-2" v-if="isSkeleton"></Skeleton>
 								<template v-else>
 									<div class="btns">
-										<Button icon="pi pi-eye" class="btn-squre" @click="viewTemplateFn(data.id)" />
+										<a :href="$env.VITE_APP_URL+'/file/'+data.hash" class="btn-squre link-btn fill" target="_blank">
+											<i class="pi pi-eye"></i>
+										</a>
+										<!-- <Button icon="pi pi-eye" class="btn-squre" @click="viewTemplateFn(data.id)" /> -->
 										<Button icon="pi pi-pen-to-square" class="btn-squre" @click="saveTemplateFn(data.id)" />
 										<Button icon="pi pi-trash" class="btn-squre" @click="deleteTemplateFn(data.id)" />
 									</div>
-									<!-- <iframe :src="$env.VITE_APP_URL+'/file/'+data.hash" frameborder="0" scrolling="no"></iframe> -->
-									<iframe frameborder="0" scrolling="no"></iframe>
+									<iframe :src="$env.VITE_APP_URL+'/file/'+data.hash" frameborder="0" scrolling="no" cross-origin="anonymous" onload="iframeObjectFit(this)"></iframe>
 									<span class="inline-block text-xs text-left mt-2">
 										{{ data.name }}
 									</span>
