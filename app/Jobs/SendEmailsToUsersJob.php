@@ -97,7 +97,7 @@ class SendEmailsToUsersJob implements ShouldQueue
             
         $category = $category->first(); 
         
-        $emailsRecoders->chunk(100, function ($chunk) use ($logService, $category, $template) {
+        $emailsRecoders->chunk(100)->each(function ($chunk) use (&$logService, &$category, &$template) {
             foreach ($chunk as $email) {
                 try {
                     $data = [];

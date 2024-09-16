@@ -166,7 +166,7 @@ class TemplateController extends Controller
 
             $all_templates = [];
 
-            Template::loginUser()->chunk(100, function ($chunk) use (&$all_templates) {
+            Template::loginUser()->chunk(100)->each(function ($chunk) use (&$all_templates) {
                 $all_templates = array_merge($all_templates, $chunk->toArray());
             });
             

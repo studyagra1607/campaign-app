@@ -160,7 +160,7 @@ class CategoryController extends Controller
 
             $all_categories = [];
 
-            Category::loginUser()->chunk(100, function ($chunk) use (&$all_categories) {
+            Category::loginUser()->chunk(100)->each(function ($chunk) use (&$all_categories) {
                 $all_categories = array_merge($all_categories, $chunk->toArray());
             });
             

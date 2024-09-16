@@ -55,7 +55,7 @@ class VerifyUploadEmailCsvJob implements ShouldQueue
             
             $logService->logForUser("Csv verification start at " . now()->format('d-m-y H:i:s') . ".");
             
-            $data->chunk(100, function ($chunk) use (&$csvErrors, $logService) {
+            $data->chunk(100)->each(function ($chunk) use (&$csvErrors, &$logService) {
                 foreach ($chunk as $key => $row)
                 {
 

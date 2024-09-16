@@ -49,7 +49,7 @@ class UploadEmailCsvToDBJob implements ShouldQueue
             
             $logService->logForUser("Collect csv data from uploaded file!");
             
-            $data->chunk(100, function ($chunk) use ($userId, $category_ids) {
+            $data->chunk(100)->each(function ($chunk) use (&$userId, &$category_ids) {
                 foreach ($chunk as $key => $row)
                 {
 
