@@ -7,13 +7,13 @@
 						<label for="category" class="block font-medium text-sm text-gray-700">
 							Selected Category
 						</label>
-						<InputText type="text" :placeholder="campaign?.category?.name" class="pointer-events-none" readonly />
+						<InputText type="text" :value="campaign?.category?.name" class="pointer-events-none" readonly />
 					</div>
 					<div class="flex flex-col gap-2 mb-4">
 						<label for="template" class="block font-medium text-sm text-gray-700">
 							Selected Template
 						</label>
-						<InputText type="text" :placeholder="campaign?.template?.name" class="pointer-events-none" readonly />
+						<InputText type="text" :value="campaign?.template?.name" class="pointer-events-none" readonly />
 					</div>
 					<div class="flex flex-col gap-2 mb-4">
 						<label class="block font-medium text-sm text-gray-700 mb-1">
@@ -74,7 +74,7 @@ const props = defineProps({
     campaignId: Number
 });
 
-const { errors, campaign, getCampaign } = useCampaign();
+const { errors, campaign, getCampaign, runCampaign } = useCampaign();
 
 const loading = ref(false);
 
@@ -88,7 +88,7 @@ onMounted(async () => {
 
 const runCampaignFn = async () => {
 	loading.value = true;
-	console.log(campaign.value);
+	await runCampaign(props.campaignId);
 	loading.value = false;
 };
 </script>

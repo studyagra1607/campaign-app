@@ -43,6 +43,11 @@ class Email extends Model
         return $query->where('status', 1);
     }
 
+    public function scopeSubscribe($query)
+    {
+        return $query->where('subscribe', 1);
+    }
+
     public function scopeLoginUser($query)
     {
         return $query->where('user_id', auth()->id());

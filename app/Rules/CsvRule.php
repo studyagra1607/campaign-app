@@ -22,7 +22,7 @@ class CsvRule implements ValidationRule
     {
         $data = collect($this->CsvToArray($value));
 
-        $data->chunk(100)->each(function ($chunk) use ($fail) {
+        $data->chunk(100, function ($chunk) use ($fail) {
             foreach ($chunk as $row)
             {
                 $validator = Validator::make($row, $this->rules);

@@ -50,7 +50,7 @@ class UploadEmailCsvRequest extends FormRequest
     public function attributes()
     {
         return [
-            
+            'category_ids' => 'category',
         ];
     }
     

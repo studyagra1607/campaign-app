@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CampaignRequest;
+use App\Jobs\SendEmailsToUsersJob;
 use App\Models\Campaign;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CampaignController extends Controller
 {
@@ -149,4 +151,37 @@ class CampaignController extends Controller
             ], 400);
         }
     }
+
+    /**
+     * There custom functions =========================================
+     */
+    
+    public function runCampaign(Request $request, $id)
+    {
+        try {
+
+            $campaign = Campaign::loginUser()->active()->find($id);
+            
+            if($campaign){
+                dispatch(new SendEmailsToUsersJob($campaign));
+            }else{
+                return response()->json([
+                    'message' => "Campaign is not active!",
+                    'status' => false,
+                ], 400);
+            };
+            
+            return response()->json([
+                'message' => 'Campaign start successfully!',
+                'status' => true,
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage().$e->getLine(),
+                'status' => false,
+            ], 400);
+        }
+    }
+    
 }

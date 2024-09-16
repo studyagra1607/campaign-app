@@ -3,11 +3,13 @@
 namespace App\Jobs;
 
 use App\Http\Traits\CsvParser;
+use App\Services\UserLogService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -31,20 +33,17 @@ class VerifyUploadEmailCsvJob implements ShouldQueue
      */
     public function handle(): void
     {
+        $csvErrors = [];
         
-        $errors = [
-            [
-                'Line No.',
-                'Data',
-                'Errors',
-            ],
-        ];
+        $userId = $this->data['user_id'];
 
-        $state = false;
+        $logService = new UserLogService($userId);
+
+        $logService->logForUser(PHP_EOL . PHP_EOL);
         
-        Log::info('UploadEmailCsvJob started : '. now()->format('d-m-y H:i:s'), $this->data);
-        
-        Log::info("UploadEmailCsvJob file : {$this->data['file_path']}");
+        $logService->logForUser("User {$userId} Started: emails uploading at " . now()->format('d-m-y H:i:s') . ".");
+
+        $logService->logForUser("Received data form user: ", $this->data);
         
         if (Storage::disk('local')->exists($this->data['file_path'])) {
 
@@ -52,9 +51,11 @@ class VerifyUploadEmailCsvJob implements ShouldQueue
 
             $data = collect($this->CsvToArray($file, true));
             
-            Log::info("Collect Csv data from file!");
+            $logService->logForUser("Collect csv data from uploaded file!");
             
-            $data->chunk(100)->each(function ($chunk) use (&$errors, &$state) {
+            $logService->logForUser("Csv verification start at " . now()->format('d-m-y H:i:s') . ".");
+            
+            $data->chunk(100, function ($chunk) use (&$csvErrors, $logService) {
                 foreach ($chunk as $key => $row)
                 {
 
@@ -62,32 +63,64 @@ class VerifyUploadEmailCsvJob implements ShouldQueue
                     
                     if ($validator->fails()) {
 
-                        $state = true;
-
-                        Log::error('Csv Validation Error: ', $validator->errors()->toArray());
-
                         $collect = [
                             $key + 2,
                             json_encode($row),
                             json_encode($validator->errors()->toArray()),
                         ];
                         
-                        array_push($errors, $collect);
+                        array_push($csvErrors, $collect);
 
+                        $logService->logForUser('Csv Validation Error on line no. '.$key+2, $validator->errors()->toArray());
+                        
                     };
 
                 };
             });
 
+            $logService->logForUser("Csv verification end at " . now()->format('d-m-y H:i:s') . ".");
+            
         }else{
 
-            Log::error('File not found!');
+            $logService->logForUser('Uploaded csv file not found!');
 
         };
 
-        Log::info('UploadEmailCsvJob ended : '. now()->format('d-m-y H:i:s'), $this->data);
+        if(!empty($csvErrors)){
+            $headers = [
+                'Line No.',
+                'Data',
+                'Errors',
+            ];
 
-        Log::info('All Csv Errors: '. $this->arrayToCsv($errors));
+            array_unshift($csvErrors, $headers);
+            $csvErrorsFile = $this->arrayToCsv($csvErrors);
+            
+            $filename = $this->data['file_name'];
+            $slugname = Str::slug(pathinfo($filename, PATHINFO_FILENAME));
+            $extension = pathinfo($filename, PATHINFO_EXTENSION);
+            $folder_name = 'csv-errors';
+            $folder_id = $this->data['user_id'];
+            $file_slug = time().'-'.$slugname.'.'.$extension;
+            $full_filepath = "{$folder_name}/{$folder_id}/{$file_slug}";
 
+            Storage::disk('public')->put($full_filepath, $csvErrorsFile);
+
+            $logService->logForUser("Csv errors file saved successfully on: $full_filepath");
+
+            $logService->logForUser("User {$userId} Failed: emails csv verification at " . now()->format('d-m-y H:i:s') . ".");
+            
+        }else{
+
+            $logService->logForUser("User {$userId} Completed: emails csv verification at " . now()->format('d-m-y H:i:s') . ".");
+
+            sleep(3);
+            
+            dispatch(new UploadEmailCsvToDBJob($this->data));
+            
+        };
+        
+        $logService->logForUser(PHP_EOL . PHP_EOL);
+        
     }
 }

@@ -4,6 +4,18 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
+if (!function_exists('updateDataToTemplate')) {
+    function updateDataToTemplate($data, $template){
+        
+        foreach($data as $key => $value){
+            $template = str_replace('{{ $'.$key.' }}', $value, $template);
+        };
+
+        return $template;
+        
+    }
+}
+
 if (!function_exists('saveFile')) {
     function saveFile($request, $folder){
 
@@ -14,8 +26,8 @@ if (!function_exists('saveFile')) {
             $file = $request->file('file');
             $old_file = $request->file_path;
 
-            $filename = $request->file->getClientOriginalName().'.'.$file->getClientOriginalExtension();
-            $slugname = Str::slug($request->file->getClientOriginalName());
+            $filename = $request->file->getClientOriginalName();
+            $slugname = Str::slug(pathinfo($filename, PATHINFO_FILENAME));
             $folder_id = auth()->id();
             $sub_folder = $folder;
             $file_slug = time().'-'.$slugname.'.'.$file->getClientOriginalExtension();

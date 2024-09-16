@@ -102,6 +102,23 @@ export default function useCampaign() {
         };
     }
 
+    const runCampaign = async (id, params) => {
+        errors.value = [];
+        try {
+            
+            let { data } = await axiosInstance.post(`/api/campaign/run/${id}`);
+            
+            // campaign.value = data.campaign;
+            
+            if(data?.status){
+                emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+
     return {
         errors,
         campaign,
@@ -111,5 +128,6 @@ export default function useCampaign() {
         storeCampaign,
         updateCampaign,
         deleteCampaign,
+        runCampaign,
     };
 }

@@ -47,7 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('template', TemplateController::class);
 
     Route::prefix('campaign')->name('campaign.')->group(function(){
-        // Route::get('/all', [CampaignController::class, 'getAllCampaign'])->name('all');
+        Route::post('/run/{id}', [CampaignController::class, 'runCampaign'])->name('run');
     });
     Route::resource('campaign', CampaignController::class);
 
