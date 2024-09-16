@@ -10,7 +10,12 @@
 		</TopBar>
 
 		<div class="content-box">
-			<template v-if="templates?.data?.length > 0">
+			<template v-if="isSkeleton && templates.length <= 0">
+				<div class="content-box-inner flex items-center justify-center">
+					<div class="custom-loader"></div>
+				</div>
+			</template>
+			<template v-else-if="templates?.data?.length > 0">
 				<TableWrapper class="border-0 rounded-md bg-gray-50 pt-5 pb-4">
 					<div class="content-box-inner py-0 pb-1">
 						<div class="grid grid-cols-3 gap-6">

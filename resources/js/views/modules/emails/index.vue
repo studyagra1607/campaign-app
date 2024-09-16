@@ -29,7 +29,12 @@
 		</TopBar>
 
 		<div class="content-box">
-			<template v-if="emails?.data?.length > 0">
+			<template v-if="isSkeleton && emails.length <= 0">
+				<div class="content-box-inner flex items-center justify-center">
+					<div class="custom-loader"></div>
+				</div>
+			</template>
+			<template v-else-if="emails?.data?.length > 0">
 				<TableWrapper>
 					<DataTable
 					v-model:selection="selectedEmails"

@@ -28,7 +28,12 @@
 		</TopBar>
 
 		<div class="content-box">
-			<template v-if="campaigns?.data?.length > 0">
+			<template v-if="isSkeleton && campaigns.length <= 0">
+				<div class="content-box-inner flex items-center justify-center">
+					<div class="custom-loader"></div>
+				</div>
+			</template>
+			<template v-else-if="campaigns?.data?.length > 0">
 				<TableWrapper>
 					<DataTable
 					v-model:selection="selectedCampaigns"
@@ -37,23 +42,11 @@
 					editMode="cell"
 					dataKey="id"
 					:rowHover="false"
-					:loading="loading"
 					:value="campaigns.data"
 					:pt="{
 						tableContainer: 'scroll_bar_none'
 					}"
 					>
-						<template #empty>
-							<div class="text-center">
-								No records found.
-							</div>
-						</template>
-
-						<template #loading>
-							<div class="text-center">
-								Loading data. Please wait.
-							</div>
-						</template>
 
 						<Column selectionMode="multiple" headerStyle="width: 3rem">
 
@@ -136,7 +129,7 @@
 							</template>
 						</Column>
 
-						<Column header="Actions" class="w-[18%]">
+						<Column header="Actions" class="w-[12%]">
 							<template #body v-if="isSkeleton">
 								<Skeleton></Skeleton>
 							</template>
@@ -203,10 +196,10 @@ const selectedCampaigns = ref([]);
 const campaignId = ref(null);
 
 onMounted(async () => {
-	loading.value = true;
+	isSkeleton.value = true;
 	await getAllCategories();
 	await getCampaigns();
-	loading.value = false;
+	isSkeleton.value = false;
 });
 
 const saveCampaignFn = (id) => {

@@ -24,7 +24,12 @@
 		</TopBar>
 
 		<div class="content-box">
-			<template v-if="categories?.data?.length > 0">
+			<template v-if="isSkeleton && categories.length <= 0">
+				<div class="content-box-inner flex items-center justify-center">
+					<div class="custom-loader"></div>
+				</div>
+			</template>
+			<template v-else-if="categories?.data?.length > 0">
 				<TableWrapper>
 					<DataTable
 					v-model:selection="selectedCategories"
