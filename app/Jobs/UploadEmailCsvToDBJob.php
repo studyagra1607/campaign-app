@@ -5,11 +5,13 @@ namespace App\Jobs;
 use App\Http\Traits\CsvParser;
 use App\Models\Email;
 use App\Services\UserLogService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class UploadEmailCsvToDBJob implements ShouldQueue
@@ -17,6 +19,7 @@ class UploadEmailCsvToDBJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, CsvParser;
 
     protected  $data;
+    protected $logService;
     
     /**
      * Create a new job instance.
@@ -24,6 +27,7 @@ class UploadEmailCsvToDBJob implements ShouldQueue
     public function __construct($data)
     {
         $this->data = $data;
+        $this->logService = new UserLogService($data['user_id']);
     }
 
     /**
@@ -35,7 +39,7 @@ class UploadEmailCsvToDBJob implements ShouldQueue
         $userId = $this->data['user_id'];
         $category_ids = $this->data['category_ids'];
         
-        $logService = new UserLogService($userId);
+        $logService = $this->logService;
 
         $logService->logForUser(PHP_EOL . PHP_EOL);
         
@@ -80,5 +84,14 @@ class UploadEmailCsvToDBJob implements ShouldQueue
         
         $logService->logForUser(PHP_EOL . PHP_EOL);
         
+    }
+
+    public function failed(Exception $exception)
+    {
+        $logService = $this->logService;
+        $logService->logForUser(PHP_EOL . PHP_EOL);
+        $logService->logForUser("Job failed: " . class_basename($this));
+        $logService->logForUser("Reason message: " . $exception->getMessage());
+        $logService->logForUser(PHP_EOL . PHP_EOL);
     }
 }

@@ -43,7 +43,7 @@
 					v-model:first="pagination_page"
 					@page="getPaginationPage"
 					:pageLinkSize="5"
-					:rows="25"
+					:rows="pagination_rows"
 					:totalRecords="templates.total"
 					:rowsPerPageOptions="[25, 50, 100]"
 					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
@@ -82,6 +82,7 @@ const { templates, getTemplates, deleteTemplate } = useTemplate();
 const isSkeleton = ref(false);
 const loading = ref(false);
 const pagination_page = ref(0);
+const pagination_rows = ref(25);
 
 const templateId = ref(null);
 
@@ -116,7 +117,7 @@ const deleteTemplateFn = (id) => {
 const filterData = async () => {
 	pagination_page.value = 0;
 	isSkeleton.value = true;
-	await getTemplates();
+	await getTemplates(pagination_page.value+1, pagination_rows.value);
 	isSkeleton.value = false;
 };
 
@@ -132,6 +133,7 @@ const closeModal = async () => {
 
 const getPaginationPage = async (page) => {
 	isSkeleton.value = true;
+	pagination_rows.value = page.rows;
 	await getTemplates((page.page + 1), page.rows);
 	isSkeleton.value = false;
 }

@@ -110,7 +110,7 @@
 					v-model:first="pagination_page"
 					@page="getPaginationPage"
 					:pageLinkSize="5"
-					:rows="25"
+					:rows="pagination_rows"
 					:totalRecords="categories.total"
 					:rowsPerPageOptions="[25, 50, 100]"
 					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
@@ -149,6 +149,7 @@ const { category, categories, getCategories, updateCategory, deleteCategory } = 
 const isSkeleton = ref(false);
 const loading = ref(false);
 const pagination_page = ref(0);
+const pagination_rows = ref(25);
 
 const selectedCategories = ref([]);
 const categoryId = ref(null);
@@ -184,7 +185,7 @@ const filterData = async () => {
 	pagination_page.value = 0;
 	isSkeleton.value = true;
 	selectedCategories.value = [];
-	await getCategories();
+	await getCategories(pagination_page.value+1, pagination_rows.value);
 	isSkeleton.value = false;
 };
 
@@ -204,6 +205,7 @@ const getMapData = (data) => {
 
 const getPaginationPage = async (page) => {
 	isSkeleton.value = true;
+	pagination_rows.value = page.rows;
 	await getCategories((page.page + 1), page.rows);
 	isSkeleton.value = false;
 }

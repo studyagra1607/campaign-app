@@ -7,11 +7,13 @@ use App\Models\Category;
 use App\Models\Email;
 use App\Models\Template;
 use App\Services\UserLogService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
@@ -19,7 +21,10 @@ class SendEmailsToUsersJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $timeout = 0;
+
     protected $data;
+    protected $logService;
     
     /**
      * Create a new job instance.
@@ -27,6 +32,7 @@ class SendEmailsToUsersJob implements ShouldQueue
     public function __construct($data)
     {
         $this->data = $data;
+        $this->logService = new UserLogService($data['user_id']);
     }
 
     /**
@@ -36,7 +42,7 @@ class SendEmailsToUsersJob implements ShouldQueue
     {
         $userId = $this->data['user_id'];
 
-        $logService = new UserLogService($userId);
+        $logService = $this->logService;
 
         $logService->logForUser(PHP_EOL . PHP_EOL);
 
@@ -96,26 +102,37 @@ class SendEmailsToUsersJob implements ShouldQueue
         $emailsCount = $emailsRecoders->count();
             
         $category = $category->first(); 
+
+        $logService->logForUser("Get emails from DB in chunk!");
         
-        $emailsRecoders->chunk(100)->each(function ($chunk) use (&$logService, &$category, &$template) {
+        $emailsRecoders->chunk(100, function ($chunk) use (&$logService, &$category, &$template) {
             foreach ($chunk as $email) {
                 try {
                     $data = [];
                     $data['username'] = $email->name;
                     $template = updateDataToTemplate($data, $template);
 
-                    Mail::queue(function ($mail) use ($category, $email, $template) {
-                        $mail->to($email->email)->subject($category->name)->html($template);
-                    });
+                    // Mail::queue(function ($mail) use ($category, $email, $template) {
+                    //     $mail->to($email->email)->subject($category->name)->html($template);
+                    // });
                     
                     $logService->logForUser("Mail send successfully to " . $email->email . "!");
                 } catch (\Exception $e) {
                     $logService->logForUser("Failed to send email: " . $e->getMessage());
-                }
-                sleep(1);
+                };
+                // sleep(1);
             }
         });
         
+        $logService->logForUser(PHP_EOL . PHP_EOL);
+    }
+
+    public function failed(Exception $exception)
+    {
+        $logService = $this->logService;
+        $logService->logForUser(PHP_EOL . PHP_EOL);
+        $logService->logForUser("Job failed: " . class_basename($this));
+        $logService->logForUser("Reason message: " . $exception->getMessage());
         $logService->logForUser(PHP_EOL . PHP_EOL);
     }
 }
