@@ -107,9 +107,9 @@ class SendEmailsToUsersJob implements ShouldQueue
                 try {
                     $data = [];
                     $data['username'] = $email->name;
-                    $template = updateDataToTemplate($data, $template);
+                    $email_template = updateDataToTemplate($data, $template);
 
-                    Mail::to($email->email)->queue(new CampaignEmail($category->name, $template));
+                    Mail::to($email->email)->send(new CampaignEmail($category->name, $email_template));
                     
                     $logService->logForUser("Mail send successfully to " . $email->email . "!");
                 } catch (\Exception $e) {
