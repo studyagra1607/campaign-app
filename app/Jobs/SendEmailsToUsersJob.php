@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Mail\CampaignEmail;
 use App\Models\Campaign;
 use App\Models\Category;
 use App\Models\Email;
@@ -20,8 +21,6 @@ use Illuminate\Support\Facades\Storage;
 class SendEmailsToUsersJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public $timeout = 0;
 
     protected $data;
     
@@ -110,15 +109,12 @@ class SendEmailsToUsersJob implements ShouldQueue
                     $data['username'] = $email->name;
                     $template = updateDataToTemplate($data, $template);
 
-                    // Mail::queue(function ($mail) use ($category, $email, $template) {
-                    //     $mail->to($email->email)->subject($category->name)->html($template);
-                    // });
+                    Mail::to($email->email)->queue(new CampaignEmail($category->name, $template));
                     
                     $logService->logForUser("Mail send successfully to " . $email->email . "!");
                 } catch (\Exception $e) {
                     $logService->logForUser("Failed to send email: " . $e->getMessage());
                 };
-                // sleep(1);
             }
         });
         

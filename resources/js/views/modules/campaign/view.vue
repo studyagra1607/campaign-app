@@ -58,7 +58,7 @@
 				</div>
 				<div class="w-[50%] flex">
 					<div class="w-full rounded-md bg-gray-100 p-3">
-						<iframe :src="$env.VITE_APP_URL+'/file/'+campaign.template?.hash" frameborder="0" scrolling="no" class="w-full h-full rounded-md" onload="iframeObjectFit(this)"></iframe>
+						<iframe :src="$env.VITE_APP_URL+'/file/'+campaign.template?.hash" frameborder="0" scrolling="no" class="w-full h-full rounded-md" onload="iframeObjectFit(this)" v-if="campaign.template?.hash"></iframe>
 					</div>
 				</div>
 			</div>

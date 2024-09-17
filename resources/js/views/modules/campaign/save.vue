@@ -76,7 +76,7 @@
 						</span>
 					</div>
 					<div class="grow w-full rounded-md bg-gray-100 p-3">
-						<iframe :src="$env.VITE_APP_URL+'/file/'+template.hash" frameborder="0" scrolling="no" class="w-full h-full rounded-md" onload="iframeObjectFit(this)"></iframe>
+						<iframe :src="$env.VITE_APP_URL+'/file/'+template.hash" frameborder="0" scrolling="no" class="w-full h-full rounded-md" onload="iframeObjectFit(this)" v-if="template.hash"></iframe>
 					</div>
 				</div>
 			</div>
