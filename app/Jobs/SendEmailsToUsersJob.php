@@ -24,7 +24,6 @@ class SendEmailsToUsersJob implements ShouldQueue
     public $timeout = 0;
 
     protected $data;
-    protected $logService;
     
     /**
      * Create a new job instance.
@@ -32,7 +31,6 @@ class SendEmailsToUsersJob implements ShouldQueue
     public function __construct($data)
     {
         $this->data = $data;
-        $this->logService = new UserLogService($data['user_id']);
     }
 
     /**
@@ -42,7 +40,7 @@ class SendEmailsToUsersJob implements ShouldQueue
     {
         $userId = $this->data['user_id'];
 
-        $logService = $this->logService;
+        $logService = new UserLogService($userId);
 
         $logService->logForUser(PHP_EOL . PHP_EOL);
 
@@ -129,7 +127,7 @@ class SendEmailsToUsersJob implements ShouldQueue
 
     public function failed(Exception $exception)
     {
-        $logService = $this->logService;
+        $logService = new UserLogService($this->data['user_id']);
         $logService->logForUser(PHP_EOL . PHP_EOL);
         $logService->logForUser("Job failed: " . class_basename($this));
         $logService->logForUser("Reason message: " . $exception->getMessage());
