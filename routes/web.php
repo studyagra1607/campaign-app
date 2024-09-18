@@ -1,9 +1,9 @@
 <?php
 
+use App\Events\UserEvent;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Events\SendEmailsToUserEvent;
 
 /*
 |--------------------------------------------------------------------------

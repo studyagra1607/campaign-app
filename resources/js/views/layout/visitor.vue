@@ -43,15 +43,57 @@
 
         <router-view></router-view>
         
+        <!-- <div class="fixed left-10 bottom-10 rounded-md bg-gray-900 text-gray-50 w-[12rem]">
+            <div class="px-4 py-3">
+                <div class="flex flex-wrap items-center gap-3 mb-1">
+                    <i class="pi pi-spin pi-spinner text-2xl"></i>
+                    <span>1000...r.csv</span>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between text-[.6rem] mb-1">
+                        <span>
+                            Verifying.....
+                        </span>
+                        <span>
+                            2000000/2000000
+                        </span>
+                    </div>
+                    <ProgressBar :value="40" :showValue="false" class="bg-slate-600 h-[.1rem]"
+                    :pt="{
+                        value: 'bg-gray-100'
+                    }"
+                    ></ProgressBar>
+                </div>
+            </div>
+        </div> -->
+        
+        <!-- <i class="pi pi-chevron-down cursor-pointer p-2 pe-0 ms-3" v-styleclass="{ selector: '.box-1', leaveActiveClass: 'animate-slideup', toggleClass: 'animate-slidedown' }"></i>
+        <div class="flex flex-col items-center">
+            <div>
+                <Button v-styleclass="{ selector: '.box2', enterFromClass: 'hidden', enterActiveClass: 'animate-slidedown' }" label="SlideDown" class="mr-2" />
+                <Button v-styleclass="{ selector: '.box2', leaveActiveClass: 'animate-slideup', leaveToClass: 'hidden' }" label="SlideUp" severity="secondary" />
+            </div>
+            <div class="h-32">
+                <div class="hidden animate-duration-500 box2 overflow-hidden">
+                    <div class="flex bg-primary text-primary-contrast items-center justify-center py-4 rounded-md mt-4 font-bold w-32 h-32">Content</div>
+                </div>
+            </div>
+        </div> -->
+        
     </main>
 
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import SideMenu from '@/views/inc/SideMenu.vue';
 const authStore = useAuthStore();
+
+const pusher = Echo.connector.pusher;
+const channel = pusher.subscribe(`user.${$userId}`);
+channel.bind('campaign', async (data) => {
+    staticToast({msg: data.data.msg, severity: data.data.type});
+});
 </script>
 
 <style scoped>

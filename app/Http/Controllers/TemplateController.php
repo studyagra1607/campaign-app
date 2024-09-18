@@ -139,7 +139,8 @@ class TemplateController extends Controller
                 $msg = count($templates) > 1 ? "(" . count($templates) . ") Templates" : "Template";
             }else{
                 return response()->json([
-                    'message' => 'Template not found!'
+                    'message' => 'Template not found!',
+                    'status' => false,
                 ], 404);
             };
 

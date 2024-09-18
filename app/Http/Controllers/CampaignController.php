@@ -135,7 +135,8 @@ class CampaignController extends Controller
                 $msg = count($campaigns) > 1 ? "(" . count($campaigns) . ") Campaigns" : "Campaign";
             }else{
                 return response()->json([
-                    'message' => 'Campaign not found!'
+                    'message' => 'Campaign not found!',
+                    'status' => false,
                 ], 404);
             };
 

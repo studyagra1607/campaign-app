@@ -136,7 +136,8 @@ class EmailController extends Controller
                 $msg = count($emails) > 1 ? "(" . count($emails) . ") Emails" : "Email";
             }else{
                 return response()->json([
-                    'message' => 'Email not found!'
+                    'message' => 'Email not found!',
+                    'status' => false,
                 ], 404);
             };
 

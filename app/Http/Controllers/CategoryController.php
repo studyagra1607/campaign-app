@@ -134,7 +134,8 @@ class CategoryController extends Controller
                 $msg = count($categories) > 1 ? "(" . count($categories) . ") Categories" : "Category";
             }else{
                 return response()->json([
-                    'message' => 'Category not found!'
+                    'message' => 'Category not found!',
+                    'status' => false,
                 ], 404);
             };
 

@@ -4,6 +4,7 @@ use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\TemplateController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -50,5 +51,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/run/{id}', [CampaignController::class, 'runCampaign'])->name('run');
     });
     Route::resource('campaign', CampaignController::class);
+
+    Route::prefix('notifications')->name('notifications.')->group(function(){
+        Route::get('/count', [NotificationController::class, 'notificationsCount'])->name('count');
+    });
+    Route::resource('notifications', NotificationController::class);
 
 });

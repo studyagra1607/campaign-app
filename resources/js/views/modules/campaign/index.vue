@@ -5,7 +5,7 @@
 			<SaveCampaign :campaignId="campaignId" @closeModal="hideHandler(), filterData()" />
 		</Dialog>
 		
-		<Dialog :header="'Campaign Name'" v-model:visible="displayViewCampaign" :draggable="false" modal style="width: 742px; max-width: 90vw;">
+		<Dialog :header="campaignName" v-model:visible="displayViewCampaign" :draggable="false" modal style="width: 742px; max-width: 90vw;">
 			<ViewCampaign :campaignId="campaignId" @closeModal="hideHandler(), filterData()" />
 		</Dialog>
 		
@@ -87,7 +87,7 @@
 								<Skeleton></Skeleton>
 							</template>
 							<template #body="{ data, index }" v-else>
-								{{ data.availables_emails ?? 0 }}
+								{{ data.category?.availables_count ?? 0 }}
 							</template>
 						</Column>
 						
@@ -96,11 +96,8 @@
 								<Skeleton></Skeleton>
 							</template>
 							<template #body="{ data, index }" v-else>
-								<template v-if="new Date(`${data.last_run}`) >= new Date()">
-									<Tag severity="danger" :value="$format(data.last_run, 'dd-MMM-yyyy, hh:mm a')" class="text-xs"></Tag>
-								</template>
-								<template v-else-if="new Date(`${data.last_run}`) < new Date()">
-									<Tag severity="warn" :value="$format(data.last_run, 'dd-MMM-yyyy, hh:mm a')" class="text-xs"></Tag>
+								<template v-if="new Date(`${data.last_run}`) <= new Date()">
+									<Tag :severity="returnSeverity(data.progress_status)" :value="$format(data.last_run, 'dd-MMM-yyyy, hh:mm a')" class="text-xs"></Tag>
 								</template>
 								<template v-else>
 									-
@@ -113,10 +110,7 @@
 								<Skeleton></Skeleton>
 							</template>
 							<template #body="{ data, index }" v-else>
-								<Tag value="Draft" class="text-xs" v-if="data.progress_status == 'draft'"></Tag>
-								<Tag severity="warn" value="Running" class="text-xs" v-if="data.progress_status == 'running'"></Tag>
-								<Tag severity="info" value="Schedule" class="text-xs" v-if="data.progress_status == 'schedule'"></Tag>
-								<Tag severity="success" value="Complete" class="text-xs" v-if="data.progress_status == 'complete'"></Tag>
+								<Tag :severity="returnSeverity(data.progress_status)" :value="capitalizeFirstLetter(data.progress_status)" class="text-xs"></Tag>
 							</template>
 						</Column>
 
@@ -144,7 +138,7 @@
 							</template>
 							<template #body="{ data, index }" v-else>
 								<div class="inline-flex flex-wrap gap-2">
-									<Button icon="pi pi-eye" class="btn-squre" @click="viewCampaignFn(data.id)" />
+									<Button icon="pi pi-eye" class="btn-squre" @click="viewCampaignFn(data.id, data.name)" />
 									<Button icon="pi pi-pen-to-square" class="btn-squre" @click="saveCampaignFn(data.id)" />
 									<Button icon="pi pi-trash" class="btn-squre" @click="deleteCampaignFn(data.id)" />
 								</div>
@@ -192,7 +186,7 @@ import ViewCampaign from "./view.vue";
 
 const confirm = useConfirm();
 const { all_categories, getAllCategories } = useCategory();
-const { campaign, campaigns, getCampaigns, updateCampaign, deleteCampaign } = useCampaign();
+const { campaign, campaigns, getCampaign, getCampaigns, updateCampaign, deleteCampaign } = useCampaign();
 
 const isSkeleton = ref(false);
 const loading = ref(false);
@@ -204,6 +198,7 @@ const displayViewCampaign = ref(false);
 
 const selectedCampaigns = ref([]);
 const campaignId = ref(null);
+const campaignName = ref(null);
 
 onMounted(async () => {
 	isSkeleton.value = true;
@@ -217,9 +212,10 @@ const saveCampaignFn = (id) => {
 	campaignId.value = id;
 };
 
-const viewCampaignFn = (id) => {
+const viewCampaignFn = (id, name) => {
 	displayViewCampaign.value = true;
 	campaignId.value = id;
+	campaignName.value = name;
 };
 
 const deleteCampaignFn = (id) => {
@@ -269,7 +265,34 @@ const getPaginationPage = async (page) => {
 	pagination_rows.value = page.rows;
 	await getCampaigns((page.page + 1), page.rows);
 	isSkeleton.value = false;
+};
+
+const returnSeverity = (status) => {
+	switch(status) {
+		case 'running':
+			return 'warn';
+		case 'complete':
+			return 'success';
+		case 'failed':
+			return 'danger';
+		default:
+			'primary'
+	}
+};
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+const pusher = Echo.connector.pusher;
+const channel = pusher.subscribe(`user.${$userId}`);
+channel.bind('campaign', async (data) => {
+	await getCampaign(data.data.campaign_id);
+	const index = campaigns.value.data.findIndex(campaign => campaign.id === data.data.campaign_id);
+	if(campaign.value != null && index != -1){
+		campaigns.value.data[index] = campaign.value;
+	};
+});
 </script>
 
 <style scoped>

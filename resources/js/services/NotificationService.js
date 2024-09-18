@@ -1,6 +1,6 @@
 import { ref, getCurrentInstance } from "vue";
 import axiosInstance from '@/services/axiosInstance.js';
-import { handleErrorResponse } from "@/services/helpers.js";
+import { formData, handleErrorResponse } from "@/services/helpers.js";
 
 export default function useNotification() {
 
@@ -8,16 +8,73 @@ export default function useNotification() {
 
     const errors = ref([]);
 
+    const notification = ref({});
+
     const notifications = ref([]);
-    
-    const storeNotification = async (data) => {
+
+    const notifications_count = ref(0);
+
+    const getNotifications = async () => {
         errors.value = [];
         try {
             
-            let response = await axiosInstance.post('/api/notification', data);
+            let { data } = await axiosInstance.get('/api/notifications');
 
-            if(response.data.status){
+            notifications.value = data.notifications;
+            
+            if(data?.status){
+                // emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+
+    const updateNotification = async (id) => {
+        errors.value = [];
+        try {
+
+            let { data } = await axiosInstance.put(`/api/notifications/${id}`);
+            
+            notification.value = data.notification;
+            
+            if(data?.status){
+                // emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+
+    const deleteNotification = async (id) => {
+        errors.value = [];
+        try {
+            
+            let { data } = await axiosInstance.delete(`/api/notifications/${id}`);
+            
+            // notification.value = data.notification;
+            
+            if(data?.status){
                 emit('closeModal');
+            };
+
+        } catch (e) {
+            errors.value = handleErrorResponse(e).errors;
+        };
+    }
+
+    const notificationsCount = async (id) => {
+        errors.value = [];
+        try {
+            
+            let { data } = await axiosInstance.get(`/api/notifications/count`);
+            
+            notifications_count.value = data.notifications_count;
+            
+            if(data?.status){
+                // emit('closeModal');
             };
 
         } catch (e) {
@@ -27,7 +84,12 @@ export default function useNotification() {
 
     return {
         errors,
+        notification,
         notifications,
-        storeNotification,
+        notifications_count,
+        getNotifications,
+        updateNotification,
+        deleteNotification,
+        notificationsCount,
     };
 }

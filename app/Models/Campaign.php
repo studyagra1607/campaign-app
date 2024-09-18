@@ -11,14 +11,13 @@ use Illuminate\Support\Facades\Log;
 class Campaign extends Model
 {
     use HasFactory;
-
+    
     protected $fillable = [
         'name',
         'status',
         'progress_status',
         'last_run',
         'run_count',
-        'availables_emails',
         'category_id',
         'template_id',
         'user_id',
@@ -61,7 +60,10 @@ class Campaign extends Model
 
     public function scopeProgress($query, $status)
     {
-        $updateData = ['progress_status' => $status];
+        $updateData = [
+            'progress_status' => $status,
+            'last_run' => now(),
+        ];
 
         if ($status === 'complete') {
             $updateData['run_count'] = DB::raw('run_count + 1');
@@ -85,16 +87,6 @@ class Campaign extends Model
 
     protected static function booted()
     {
-        static::saved(function ($campaign) {
-            if ($campaign->category) {
-                $campaign->availables_emails = $campaign->category->emails()->where('subscribe', 1)->where('status', 1)->count();
-            } else {
-                $campaign->availables_emails = 0;
-            };
-            $campaign->updateQuietly([
-                'availables_emails' => $campaign->availables_emails,
-            ]);
-        });
         static::addGlobalScope(function (Builder $builder) {
             $builder->with('category', 'template');
         });
