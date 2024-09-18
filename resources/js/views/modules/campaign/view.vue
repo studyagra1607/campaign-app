@@ -50,7 +50,8 @@
 						</div>
 					</div>
 					<div class="mb-4">
-						<Button type="submit" icon="pi pi-caret-right text-sm" :loading="loading" label="Run" class="min-w-28" />
+						<Button type="submit" icon="pi pi-caret-right text-sm" :loading="true" label="Running..." class="min-w-28" v-if="campaign.progress_status == 'running'" />
+						<Button type="submit" icon="pi pi-caret-right text-sm" :loading="loading" label="Run" class="min-w-28" v-else />
 					</div>
 					<span class="text-[.68rem]">
 						Note: defaulte <b>subscribers</b> are selected.

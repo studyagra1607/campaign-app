@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\SendEmailsToUserEvent;
 use App\Mail\CampaignEmail;
 use App\Models\Campaign;
 use App\Models\Category;
@@ -61,31 +62,40 @@ class SendEmailsToUsersJob implements ShouldQueue
             'Template' => $template,
         ];
 
+        $errors = [];
+
         foreach ($models as $modelName => $modelInfo) {
             $model = $modelInfo->first();
             
-            $exists = true;
-            $active = true;
-            
             $exists = $modelInfo->exists();
+            $active = $modelName !== 'Template' ? $modelInfo->active()->exists() : true;
             
-            if($modelName != 'Template'){
-                $active = $modelInfo->active()->exists();
-            }else{
+            if ($modelName === 'Template' && $model) {
                 if (Storage::disk('local')->exists($model->file_path)){
                     $template = Storage::disk('local')->get($model->file_path);
                 }else{
-                    $logService->logForUser('Template file not found!');
+                    $msg = "Template file not found!";
+                    $errors[] = $msg;
+                    $logService->logForUser($msg);
                 };
             }
             
             if (!$exists) {
-                $logService->logForUser("{$modelName} '{$model->name}' does not exist!");
+                $msg = "{$modelName} '{$model->name}' does not exist!";
+                $errors[] = $msg;
+                $logService->logForUser($msg);
             }
 
             if (!$active) {
-                $logService->logForUser("{$modelName} '{$model->name}' is not active!");
+                $msg = "{$modelName} '{$model->name}' is not active!";
+                $errors[] = $msg;
+                $logService->logForUser($msg);
             }
+        };
+        
+        if(!empty($errors)){
+            $this->fail(new \Exception("get not active or not exists errors!"));
+            return;
         };
         
         $emailsRecoders = Email::active()
@@ -119,10 +129,15 @@ class SendEmailsToUsersJob implements ShouldQueue
         });
         
         $logService->logForUser(PHP_EOL . PHP_EOL);
+        
+        Campaign::where('id', $this->data['id'])->where('user_id', $this->data['user_id'])->Progress('complete');
+        
+        event(new SendEmailsToUserEvent($userId));    
     }
 
     public function failed(Exception $exception)
     {
+        Campaign::where('id', $this->data['id'])->where('user_id', $this->data['user_id'])->Progress('failed');
         $logService = new UserLogService($this->data['user_id']);
         $logService->logForUser(PHP_EOL . PHP_EOL);
         $logService->logForUser("Job failed: " . class_basename($this));

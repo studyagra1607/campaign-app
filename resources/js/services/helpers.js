@@ -84,19 +84,21 @@ export const handleErrorResponse = (e) => {
 export const formData = ({params, method}, ...arrKeys) => {
     const invalidTokens = ['', null, 'null', undefined, 'undefined', false, 'false'];
     let  data = new FormData();
-    method ? data.append('_method', method) : null;
+    method ? data.append('_method', method) : '';
     let keys = Object.keys(params);
     keys.forEach((key) => {
         if(arrKeys.includes(key)){
             if(params[key]?.length > 0){
                 params[key].forEach((value) => {
-                    !invalidTokens.includes(value) ? data.append(`${key}[]`, value) : null;
+                    !invalidTokens.includes(value) ? data.append(`${key}[]`, value) : '';
                 });
             }else{
-                !invalidTokens.includes(params[key]) ? data.append(key, params[key]) : null;
+                !invalidTokens.includes(params[key]) ? data.append(key, params[key]) : '';
             };
         }else{
-            data.append(key, params[key]);
+            console.log(key, params[key]);
+            
+            data.append(key, params[key] ?? '');
         };
     });
     return data;

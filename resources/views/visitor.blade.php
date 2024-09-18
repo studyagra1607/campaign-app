@@ -26,6 +26,12 @@
     <script src="{{ config('app.url') }}/assets/js/static-toast.js"></script>
 
     @vite('resources/js/app.js')
+
+    @if(auth()->check())
+    <script>
+        const $userId = {{ auth()->id() }};
+    </script>
+    @endif
     
 </body>
 </html>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Events\SendEmailsToUserEvent;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,4 +32,4 @@ Route::get('/file/{hash}', [FileController::class, 'show'])->name('file.show');
 
 Route::get('/{any}', function () {
     return view('visitor');
-})->where('any', '^(?!profile|storage|files|api.*).*');
+})->where('any', '^(?!profile|storage|file|api.*).*');

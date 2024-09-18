@@ -161,6 +161,11 @@ class CampaignController extends Controller
         try {
 
             $campaign = Campaign::loginUser()->active()->find($id);
+
+            $campaign->update([
+                'progress_status' => 'running',
+                'last_run' => now(),
+            ]);
             
             if($campaign){
                 dispatch(new SendEmailsToUsersJob($campaign));

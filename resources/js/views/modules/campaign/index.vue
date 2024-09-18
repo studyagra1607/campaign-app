@@ -37,7 +37,7 @@
 				<TableWrapper>
 					<DataTable
 					v-model:selection="selectedCampaigns"
-					tableClass="min-w-[1400px]"
+					tableClass="min-w-[1500px]"
 					class="p-datatable-gridlines"
 					editMode="cell"
 					dataKey="id"
@@ -79,6 +79,15 @@
 							</template>
 							<template #editor="{ data, index }">
 								<Select id="category" v-model="data.category_id" :options="all_categories" :filter="true" optionValue="id" optionLabel="name" placeholder="Select Category" class="w-full" @change="changeCategoryFn(data, index)" />
+							</template>
+						</Column>
+
+						<Column header="Availables" class="w-[10%]">
+							<template #body v-if="isSkeleton">
+								<Skeleton></Skeleton>
+							</template>
+							<template #body="{ data, index }" v-else>
+								{{ data.availables_emails ?? 0 }}
 							</template>
 						</Column>
 						
