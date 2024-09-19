@@ -11,13 +11,15 @@ class UserNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    public $type;
     public $msg;
     
     /**
      * Create a new notification instance.
      */
-    public function __construct($msg)
+    public function __construct($type, $msg)
     {
+        $this->type = $type;
         $this->msg = $msg;
     }
 
@@ -39,6 +41,7 @@ class UserNotification extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
+            'type' => $this->type,
             'msg' => $this->msg,
         ];
     }

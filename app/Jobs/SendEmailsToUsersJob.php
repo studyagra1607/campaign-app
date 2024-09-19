@@ -112,8 +112,8 @@ class SendEmailsToUsersJob implements ShouldQueue
 
         $fileInfo = $this->createEmailsStatusCsv($logService, $emails_status);
         
-        $msg = '"' . $this->data['name'] . '"' . ' campaign completed successfully! ';
-        $temp = $msg . "<a href='" . config('app.url') . "/storage/{$fileInfo['full_filepath']}'>{$fileInfo['file_slug']}</a>";
+        $msg = "<b>{$this->data['name']}</b> campaign completed successfully! ";
+        $temp = $msg . " <a href='" . config('app.url') . "/storage/{$fileInfo['full_filepath']}'>view status</a>";
 
         $logService->logForUser($temp);
 
@@ -122,7 +122,7 @@ class SendEmailsToUsersJob implements ShouldQueue
         $campaign->progress('complete');
                 
         $user = User::find($userId);
-        $user->notify(new UserNotification($temp));
+        $user->notify(new UserNotification('success', $temp));
         
         event(new UserEvent($userId, 'campaign', ['type' => 'success', 'msg' => $msg, 'campaign_id' => $campaign_id]));
 
@@ -162,7 +162,7 @@ class SendEmailsToUsersJob implements ShouldQueue
             }
 
             if ($exists && !$active) {
-                $msg = "{$modelName} " . '"' . $model->name . '"' . " is not active!";
+                $msg = "{$modelName} <b>{$model->name}</b> is not active!";
                 $errors[] = $msg;
                 $logService->logForUser($msg);
             }
@@ -177,9 +177,9 @@ class SendEmailsToUsersJob implements ShouldQueue
     protected function createEmailsStatusCsv($logService, $emails_status)
     {
         $headers = [
-            'Line No.',
-            'Data',
-            'Errors',
+            'Name',
+            'Email',
+            'Status',
         ];
 
         array_unshift($emails_status, $headers);
@@ -208,21 +208,19 @@ class SendEmailsToUsersJob implements ShouldQueue
         $logService = new UserLogService($userId);
         $logService->logForUser(PHP_EOL . PHP_EOL);
 
-        $pmsg = '"' . $this->data['name'] . '"' . ' campaign failed!';
+        $pmsg = "<b>{$this->data['name']}</b> campaign failed!";
         $msg = $exception->getMessage();
         
         if(is_array(json_decode($msg))){
             $msgs = json_decode($msg);
-            $temp = $pmsg." Reason: <br>";
-            $temp .= "<ul>";
+            $temp = $pmsg . "<ul>";
             foreach($msgs as $msg){
                 $temp .= "<li>$msg</li>";
             };
             $temp .= "</ul>";
             $msg = 'get not active or not exists errors!';
         }else{
-            $temp = $pmsg." Reason: <br>";
-            $temp .= "<ul><li>$msg</li></ul>";  
+            $temp = $pmsg . "<ul><li>$msg</li></ul>";  
         };
         
         $logService->logForUser("Job failed: " . class_basename($this));
@@ -232,7 +230,7 @@ class SendEmailsToUsersJob implements ShouldQueue
         Campaign::where('id', $campaign_id)->where('user_id', $userId)->progress('failed');
 
         $user = User::find($userId);
-        $user->notify(new UserNotification($temp));
+        $user->notify(new UserNotification('error', $temp));
         
         event(new UserEvent($userId, 'campaign', ['type' => 'error', 'msg' => $pmsg, 'campaign_id' => $campaign_id]));
 

@@ -3,18 +3,7 @@
 		
 		<TopBar>
 			<div class="flex flex-wrap gap-2">
-				<Button icon="pi pi-trash" class="btn-outline" :label="`Delete (${selectedNotifications?.length})`" :loading="loading" @click="deleteNotificationFn()" v-if="selectedNotifications.length > 0" 
-					v-tooltip.top="{ value: 'Delete selected notifications.',
-						pt: {
-							arrow: {
-								class: {
-									'!border-y-gray-700': true,
-								},
-							},
-							text: '!bg-gray-700 !text-gray-100'
-						}
-					}"
-				/>
+				<Button icon="pi pi-trash" class="btn-outline" :label="`Delete (${selectedNotifications?.length})`" :loading="loading" @click="deleteNotificationFn()" v-if="selectedNotifications.length > 0" />
 				<Button icon="pi pi-check-square" iconClass="text-sm font-black" label="Select All" @click="selectAllNotificationFn()" v-if="selectedNotifications.length > 0" />
 			</div>
 		</TopBar>
@@ -29,7 +18,7 @@
 				<div class="content-box-inner">
 					<div class="flex flex-col gap-2">
 						<template v-for="(data, index) in notifications" :key="index">
-							<div class="notifications" :class="data.read_at ? `border-${'green'}-200 bg-${'green'}-50 text-${'green'}-600` : `border-${'green'}-200 bg-${'green'}-100 text-${'green'}-600`" @click="updateNotificationFn(data, index)">
+							<div class="notifications" :class="msgTheam['default'], data.read_at ? msgTheam[data.data.type+'-read'] : msgTheam[data.data.type]" @click="updateNotificationFn(data, index)">
 								<Checkbox class="checkbox" v-model="selectedNotifications" name="notification" :value="data.id" />
 								<span class="date">{{ $format(data.created_at, 'dd-MMM-yyyy, hh:mm aaa') }}</span>
 								<span class="msg" v-html="data.data.msg"></span>
@@ -60,6 +49,20 @@ const loading = ref(false);
 
 const selectedNotifications = ref([]);
 
+const msgTheam = {
+	'default': `rounded-md border`,
+	
+	'success': `border-green-200 bg-green-100 text-green-600`,
+	'error': `border-red-200 bg-red-100 text-red-600`,
+	'info': `border-sky-200 bg-sky-200 text-sky-600`,
+	'warn': `border-yellow-200 bg-yellow-100 text-yellow-600`,
+
+	'success-read': `border-green-200 bg-green-50 text-green-600`,
+	'error-read': `border-red-200 bg-red-50 text-red-600`,
+	'info-read': `border-sky-200 bg-sky-100 text-sky-600`,
+	'warn-read': `border-yellow-200 bg-yellow-50 text-yellow-600`,
+};
+
 onMounted(async () => {
 	isSkeleton.value = true;
 	await getNotifications();
@@ -86,6 +89,7 @@ const selectAllNotificationFn = async () => {
 
 const filterData = async () => {
 	isSkeleton.value = true;
+	selectedNotifications.value = [];
 	await getNotifications();
 	isSkeleton.value = false;
 };
@@ -118,8 +122,6 @@ channel.bind_global(async (event, data) => {
 	relative
     flex
     items-center
-    rounded-md
-	border
 	px-3
 	py-2
     transition-all
@@ -141,6 +143,11 @@ channel.bind_global(async (event, data) => {
     @apply
 	block 
 	text-sm
+}
+.notifications span.msg a{
+	@apply
+	text-[.82rem]
+	underline
 }
 .notifications span.msg b{
 	@apply

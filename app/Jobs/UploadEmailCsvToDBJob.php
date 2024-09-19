@@ -84,12 +84,11 @@ class UploadEmailCsvToDBJob implements ShouldQueue
             
             $logService->logForUser(PHP_EOL . PHP_EOL);
             
-            $msg = '"' . $filename . '"' . " upload to DB failed! ";
-            $temp = $msg . " Reason: <br> ";
-            $temp .= " <ul><li>Uploaded csv file not found!</li></ul> "; 
+            $msg = "<b>$filename</b> upload to DB failed!";
+            $temp = $msg . "<ul><li>Uploaded csv file not found!</li></ul>";
 
             $user = User::find($userId);
-            $user->notify(new UserNotification($temp));
+            $user->notify(new UserNotification('error', $temp));
             
             event(new UserEvent($userId, 'csv-upload-to-db', ['type' => 'error', 'msg' => $msg]));
             
@@ -97,10 +96,10 @@ class UploadEmailCsvToDBJob implements ShouldQueue
             
         };
         
-        $msg = '"' . $filename . '"' . " uploaded to DB successfully! ";
+        $msg = "<b>$filename</b> uploaded to DB successfully!";
             
         $user = User::find($userId);
-        $user->notify(new UserNotification($msg));
+        $user->notify(new UserNotification('info', $msg));
         
         event(new UserEvent($userId, 'csv-upload-to-db', ['type' => 'success', 'msg' => $msg]));
         
@@ -119,12 +118,11 @@ class UploadEmailCsvToDBJob implements ShouldQueue
         $logService->logForUser("Reason message: " . $exception->getMessage());
         $logService->logForUser(PHP_EOL . PHP_EOL);
 
-        $msg = '"' . $filename . '"' . ' upload to DB failed! ';
-        $temp = $msg . " Reason: <br> ";
-        $temp .= "<ul><li>".$exception->getMessage()."</li></ul>";  
+        $msg = "<b>$filename</b> upload to DB failed!";
+        $temp = $msg . "<ul><li>".$exception->getMessage()."</li></ul>";  
 
         $user = User::find($userId);
-        $user->notify(new UserNotification($temp));
+        $user->notify(new UserNotification('error', $temp));
         
         event(new UserEvent($userId, 'csv-upload-to-db', ['type' => 'error', 'msg' => $msg]));
     }

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('schedule_type', ['once', 'always', 'count'])->default('once')->nullable();
             $table->integer('schedule_count')->nullable();
             $table->dateTime('last_run')->nullable();
-            $table->integer('run_count')->nullable();
+            $table->integer('run_count')->default(0)->nullable();
             $table->integer('remaining_emails')->nullable();
             $table->enum('progress_status', ['draft', 'running', 'complete', 'failed'])->default('draft')->nullable();
             $table->boolean('status')->default(1)->nullable();
