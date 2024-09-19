@@ -91,8 +91,10 @@ const authStore = useAuthStore();
 
 const pusher = Echo.connector.pusher;
 const channel = pusher.subscribe(`user.${$userId}`);
-channel.bind('campaign', async (data) => {
-    staticToast({msg: data.data.msg, severity: data.data.type});
+channel.bind_global(async (event, data) => {
+    if(data?.data?.msg && data?.data?.type){
+        staticToast({msg: data.data.msg, severity: data.data.type});
+    };
 });
 </script>
 

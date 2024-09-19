@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('schedule_count')->nullable();
             $table->dateTime('last_run')->nullable();
             $table->integer('run_count')->nullable();
-            $table->integer('availables_emails')->nullable();
+            $table->integer('remaining_emails')->nullable();
             $table->enum('progress_status', ['draft', 'running', 'complete', 'failed'])->default('draft')->nullable();
             $table->boolean('status')->default(1)->nullable();
             $table->unsignedBigInteger('category_id');

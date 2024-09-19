@@ -2,13 +2,16 @@
 
 namespace App\Jobs;
 
-use App\Events\SendEmailsToUserEvent;
 use App\Mail\CampaignEmail;
 use App\Models\Campaign;
 use App\Models\Category;
 use App\Models\Email;
+use App\Models\User;
 use App\Models\Template;
 use App\Services\UserLogService;
+use App\Events\UserEvent;
+use App\Notifications\UserNotification;
+use App\Http\Traits\CsvParser;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -21,7 +24,7 @@ use Illuminate\Support\Facades\Storage;
 
 class SendEmailsToUsersJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, CsvParser;
 
     protected $data;
     
@@ -38,6 +41,7 @@ class SendEmailsToUsersJob implements ShouldQueue
      */
     public function handle(): void
     {
+
         $userId = $this->data['user_id'];
 
         $logService = new UserLogService($userId);
@@ -46,8 +50,8 @@ class SendEmailsToUsersJob implements ShouldQueue
 
         $logService->logForUser("User {$userId} Ran: campaign - '{$this->data['name']}' at " . now()->format('d-m-y H:i:s') . ".");
 
-        $logService->logForUser("Received campaign information form user: ", $this->data->toArray());        
-        
+        $logService->logForUser("Received campaign information form user: ", $this->data->toArray());
+
         $campaign_id = $this->data['id'];
         $category_id = $this->data['category_id'];
         $template_id = $this->data['template_id'];
@@ -56,48 +60,15 @@ class SendEmailsToUsersJob implements ShouldQueue
         $category = Category::where('id', $category_id)->where('user_id', $userId);
         $template = Template::where('id', $template_id)->where('user_id', $userId);
         
-        $models = [
-            'Campaign' => $campaign,
-            'Category' => $category,
-            'Template' => $template,
-        ];
-
-        $errors = [];
-
-        foreach ($models as $modelName => $modelInfo) {
-            $model = $modelInfo->first();
-            
-            $exists = $modelInfo->exists();
-            $active = $modelName !== 'Template' ? $modelInfo->active()->exists() : true;
-            
-            if ($modelName === 'Template' && $model) {
-                if (Storage::disk('local')->exists($model->file_path)){
-                    $template = Storage::disk('local')->get($model->file_path);
-                }else{
-                    $msg = "Template file not found!";
-                    $errors[] = $msg;
-                    $logService->logForUser($msg);
-                };
-            }
-            
-            if (!$exists) {
-                $msg = "{$modelName} '{$model->name}' does not exist!";
-                $errors[] = $msg;
-                $logService->logForUser($msg);
-            }
-
-            if (!$active) {
-                $msg = "{$modelName} '{$model->name}' is not active!";
-                $errors[] = $msg;
-                $logService->logForUser($msg);
-            }
-        };
+        $ErrorsOrTemplate = $this->getErrorsOrTemplate($logService, $campaign, $category, $template);
         
-        if(!empty($errors)){
-            $this->fail(new \Exception("get not active or not exists errors!"));
+        if(!empty($ErrorsOrTemplate['errors'])){
+            $this->fail(new \Exception(json_encode($ErrorsOrTemplate['errors'])));
             return;
         };
-        
+
+        $template = $ErrorsOrTemplate['template'];
+
         $emailsRecoders = Email::active()
             ->subscribe()
             ->where('user_id', $userId)
@@ -108,12 +79,15 @@ class SendEmailsToUsersJob implements ShouldQueue
 
         $emailsCount = $emailsRecoders->count();
             
-        $category = $category->first(); 
+        $category = $category->first();
 
+        $emails_status = [];
+        
         $logService->logForUser("Get emails from DB in chunk!");
         
-        $emailsRecoders->chunk(100, function ($chunk) use (&$logService, &$category, &$template) {
+        $emailsRecoders->chunk(100, function ($chunk) use (&$logService, &$category, &$template, &$emails_status) {
             foreach ($chunk as $email) {
+                $status = null;
                 try {
                     $data = [];
                     $data['username'] = $email->name;
@@ -121,27 +95,146 @@ class SendEmailsToUsersJob implements ShouldQueue
 
                     Mail::to($email->email)->send(new CampaignEmail($category->name, $email_template));
                     
+                    $status = 'send';
                     $logService->logForUser("Mail send successfully to " . $email->email . "!");
                 } catch (\Exception $e) {
-                    $logService->logForUser("Failed to send email: " . $e->getMessage());
+                    $status = 'failed';
+                    $logService->logForUser("Failed mail send to " . $email->email . "!", $e->getMessage());
                 };
+                $collect = [
+                    $email->name,
+                    $email->email,
+                    $status,
+                ];
+                array_push($emails_status, $collect);
             }
         });
+
+        $fileInfo = $this->createEmailsStatusCsv($logService, $emails_status);
         
+        $msg = '"' . $this->data['name'] . '"' . ' campaign completed successfully! ';
+        $temp = $msg . "<a href='" . config('app.url') . "/storage/{$fileInfo['full_filepath']}'>{$fileInfo['file_slug']}</a>";
+
+        $logService->logForUser($temp);
+
         $logService->logForUser(PHP_EOL . PHP_EOL);
         
-        Campaign::where('id', $this->data['id'])->where('user_id', $this->data['user_id'])->Progress('complete');
+        $campaign->progress('complete');
+                
+        $user = User::find($userId);
+        $user->notify(new UserNotification($temp));
         
-        event(new SendEmailsToUserEvent($userId));    
+        event(new UserEvent($userId, 'campaign', ['type' => 'success', 'msg' => $msg, 'campaign_id' => $campaign_id]));
+
     }
 
+    protected function getErrorsOrTemplate($logService, $campaign, $category, $template)
+    {
+        $models = [
+            'Campaign' => $campaign,
+            'Category' => $category,
+            'Template' => $template,
+        ];
+
+        $errors = [];
+        $template_file = null;
+
+        foreach ($models as $modelName => $modelInfo) {
+            $model = $modelInfo->first();
+            
+            $exists = $modelInfo->exists();
+            $active = $modelName !== 'Template' ? $modelInfo->active()->exists() : true;
+            
+            if ($modelName === 'Template' && $exists) {
+                if (Storage::disk('local')->exists($model->file_path)){
+                    $template_file = Storage::disk('local')->get($model->file_path);
+                }else{
+                    $msg = "Template file not found!";
+                    $errors[] = $msg;
+                    $logService->logForUser($msg);
+                };
+            }
+            
+            if (!$exists) {
+                $msg = "Selected {$modelName} does not exist!";
+                $errors[] = $msg;
+                $logService->logForUser($msg);
+            }
+
+            if ($exists && !$active) {
+                $msg = "{$modelName} " . '"' . $model->name . '"' . " is not active!";
+                $errors[] = $msg;
+                $logService->logForUser($msg);
+            }
+        };
+        
+        return [
+            'errors' => $errors,
+            'template' => $template_file,
+        ];
+    }
+
+    protected function createEmailsStatusCsv($logService, $emails_status)
+    {
+        $headers = [
+            'Line No.',
+            'Data',
+            'Errors',
+        ];
+
+        array_unshift($emails_status, $headers);
+        $emails_status_file = $this->arrayToCsv($emails_status);
+        
+        $folder_name = 'campaign-emails-status';
+        $folder_id = $this->data['user_id'];
+        $file_slug = time().'-'.'emails-status.csv';
+        $full_filepath = "{$folder_name}/{$folder_id}/{$file_slug}";
+
+        Storage::disk('public')->put($full_filepath, $emails_status_file);
+
+        $logService->logForUser("Emails status file saved successfully on: $full_filepath");
+
+        return [
+            'file_slug' => $file_slug,
+            'full_filepath' => $full_filepath,
+        ];
+    }
+    
     public function failed(Exception $exception)
     {
-        Campaign::where('id', $this->data['id'])->where('user_id', $this->data['user_id'])->Progress('failed');
-        $logService = new UserLogService($this->data['user_id']);
+        $userId = $this->data['user_id'];
+        $campaign_id = $this->data['id'];
+        
+        $logService = new UserLogService($userId);
         $logService->logForUser(PHP_EOL . PHP_EOL);
+
+        $pmsg = '"' . $this->data['name'] . '"' . ' campaign failed!';
+        $msg = $exception->getMessage();
+        
+        if(is_array(json_decode($msg))){
+            $msgs = json_decode($msg);
+            $temp = $pmsg." Reason: <br>";
+            $temp .= "<ul>";
+            foreach($msgs as $msg){
+                $temp .= "<li>$msg</li>";
+            };
+            $temp .= "</ul>";
+            $msg = 'get not active or not exists errors!';
+        }else{
+            $temp = $pmsg." Reason: <br>";
+            $temp .= "<ul><li>$msg</li></ul>";  
+        };
+        
         $logService->logForUser("Job failed: " . class_basename($this));
-        $logService->logForUser("Reason message: " . $exception->getMessage());
+        $logService->logForUser("Reason message: " . $msg);
         $logService->logForUser(PHP_EOL . PHP_EOL);
+
+        Campaign::where('id', $campaign_id)->where('user_id', $userId)->progress('failed');
+
+        $user = User::find($userId);
+        $user->notify(new UserNotification($temp));
+        
+        event(new UserEvent($userId, 'campaign', ['type' => 'error', 'msg' => $pmsg, 'campaign_id' => $campaign_id]));
+
     }
 }

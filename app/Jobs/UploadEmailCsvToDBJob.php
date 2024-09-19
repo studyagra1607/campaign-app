@@ -2,8 +2,11 @@
 
 namespace App\Jobs;
 
+use App\Events\UserEvent;
 use App\Http\Traits\CsvParser;
 use App\Models\Email;
+use App\Models\User;
+use App\Notifications\UserNotification;
 use App\Services\UserLogService;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -36,6 +39,7 @@ class UploadEmailCsvToDBJob implements ShouldQueue
 
         $userId = $this->data['user_id'];
         $category_ids = $this->data['category_ids'];
+        $filename = $this->data['file_name'];
         
         $logService = new UserLogService($userId);
 
@@ -78,7 +82,27 @@ class UploadEmailCsvToDBJob implements ShouldQueue
 
             $logService->logForUser("User {$userId} Failed: emails save to DB at " . now()->format('d-m-y H:i:s') . ".");
             
+            $logService->logForUser(PHP_EOL . PHP_EOL);
+            
+            $msg = '"' . $filename . '"' . " upload to DB failed! ";
+            $temp = $msg . " Reason: <br> ";
+            $temp .= " <ul><li>Uploaded csv file not found!</li></ul> "; 
+
+            $user = User::find($userId);
+            $user->notify(new UserNotification($temp));
+            
+            event(new UserEvent($userId, 'csv-upload-to-db', ['type' => 'error', 'msg' => $msg]));
+            
+            return;
+            
         };
+        
+        $msg = '"' . $filename . '"' . " uploaded to DB successfully! ";
+            
+        $user = User::find($userId);
+        $user->notify(new UserNotification($msg));
+        
+        event(new UserEvent($userId, 'csv-upload-to-db', ['type' => 'success', 'msg' => $msg]));
         
         $logService->logForUser(PHP_EOL . PHP_EOL);
         
@@ -86,10 +110,22 @@ class UploadEmailCsvToDBJob implements ShouldQueue
 
     public function failed(Exception $exception)
     {
-        $logService = new UserLogService($this->data['user_id']);
+        $userId = $this->data['user_id'];
+        $filename = $this->data['file_name'];
+
+        $logService = new UserLogService($userId);
         $logService->logForUser(PHP_EOL . PHP_EOL);
         $logService->logForUser("Job failed: " . class_basename($this));
         $logService->logForUser("Reason message: " . $exception->getMessage());
         $logService->logForUser(PHP_EOL . PHP_EOL);
+
+        $msg = '"' . $filename . '"' . ' upload to DB failed! ';
+        $temp = $msg . " Reason: <br> ";
+        $temp .= "<ul><li>".$exception->getMessage()."</li></ul>";  
+
+        $user = User::find($userId);
+        $user->notify(new UserNotification($temp));
+        
+        event(new UserEvent($userId, 'csv-upload-to-db', ['type' => 'error', 'msg' => $msg]));
     }
 }

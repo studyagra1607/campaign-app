@@ -69,9 +69,11 @@ class NotificationController extends Controller
         try {
 
             $notification = auth()->user()->notifications->where('id', $id)->first();
-            $notification->markAsRead();
-            
-            event(new UserEvent(auth()->id(), 'notification'));
+
+            if(!$notification->read_at){
+                $notification->markAsRead();
+                event(new UserEvent(auth()->id(), 'notification'));
+            };            
             
             return response()->json([
                 'notification' => $notification,
@@ -92,22 +94,27 @@ class NotificationController extends Controller
     public function destroy($id)
     {
         try {
+            
+            $ids = explode(",", $id);
 
-            $notification = auth()->user()->notifications->where('id', $id)->first();
-
-            if ($notification) {
-                $notification->delete();
+            $notifications = auth()->user()->notifications()->findMany($ids);
+            
+            if($notifications->isNotEmpty()){
+                $notifications->each(function ($notification) {
+                    $notification->delete();
+                });
+                $msg = count($notifications) > 1 ? "(" . count($notifications) . ") Notifications" : "Notification";
             }else{
                 return response()->json([
                     'message' => 'Notification not found!',
                     'status' => false,
                 ], 404);
-            }
-
+            };
+            
             event(new UserEvent(auth()->id(), 'notification'));
             
             return response()->json([
-                'message' => "Notification deleted successfully!",
+                'message' => "$msg deleted successfully!",
                 'status' => true,
             ]);
             
