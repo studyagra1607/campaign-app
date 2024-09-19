@@ -8,7 +8,7 @@ if (!function_exists('updateDataToTemplate')) {
     function updateDataToTemplate($data, $template){
         
         foreach($data as $key => $value){
-            $template = str_replace('{{ $'.$key.' }}', $value, $template);
+            $template = str_replace('{{ '.$key.' }}', $value, $template);
         };
 
         return $template;
