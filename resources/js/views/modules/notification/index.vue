@@ -49,6 +49,8 @@ const loading = ref(false);
 
 const selectedNotifications = ref([]);
 
+// :class="data.read_at ? 'bg-gray-50' : 'bg-gray-200'"
+
 const msgTheam = {
 	'default': `rounded-md border`,
 	
@@ -125,6 +127,10 @@ channel.bind_global(async (event, data) => {
 	px-3
 	py-2
     transition-all
+	/* rounded-md
+	border
+	border-gray-200
+	text-gray-800 */
 }
 .notifications .checkbox{
 	@apply
