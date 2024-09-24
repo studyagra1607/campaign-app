@@ -96,8 +96,6 @@ export const formData = ({params, method}, ...arrKeys) => {
                 !invalidTokens.includes(params[key]) ? data.append(key, params[key]) : '';
             };
         }else{
-            console.log(key, params[key]);
-            
             data.append(key, params[key] ?? '');
         };
     });

@@ -65,7 +65,7 @@ export default function useNotification() {
         };
     }
 
-    const notificationsCount = async (id) => {
+    const notificationsCount = async () => {
         errors.value = [];
         try {
             
