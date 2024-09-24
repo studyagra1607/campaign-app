@@ -34,7 +34,7 @@ class UploadEmailCsvRequest extends FormRequest
                 'required',
                 'file',
                 'mimes:csv,xls,xlsx',
-                'max:10240',
+                'max:5120',
             ],
         ];
     }
