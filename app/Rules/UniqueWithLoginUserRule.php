@@ -9,12 +9,17 @@ use Illuminate\Support\Facades\DB;
 class UniqueWithLoginUserRule implements Rule
 {
     protected $table;
+
     protected $column;
+
     protected $model;
+
     protected $ignoreId;
+
     protected $ignoreUser;
+
     protected $value;
-    
+
     public function __construct($table, $column, $model, $ignoreId = null, $ignoreUser = false)
     {
         $this->table = $table;
@@ -33,17 +38,17 @@ class UniqueWithLoginUserRule implements Rule
         if ($this->ignoreId) {
             $query->where('id', '!=', $this->ignoreId);
         }
-        
-        if (!$this->ignoreUser) {
-            $query->where('user_id', Auth::id());
-        };
 
-        return !$query->exists();
+        if (! $this->ignoreUser) {
+            $query->where('user_id', Auth::id());
+        }
+
+        return ! $query->exists();
     }
 
     public function message()
     {
 
-        return 'You already have a ' . strtolower($this->model) . ' with ' . $this->value . '.';
+        return 'You already have a '.strtolower($this->model).' with '.$this->value.'.';
     }
 }

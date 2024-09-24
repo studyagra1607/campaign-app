@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TemplateRequest;
 use App\Models\Template;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class TemplateController extends Controller
 {
@@ -17,12 +16,12 @@ class TemplateController extends Controller
         try {
 
             $templates = Template::loginUser()->paginate($request->page_rows);
-            
+
             return response()->json([
                 'templates' => $templates,
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -45,9 +44,9 @@ class TemplateController extends Controller
     public function store(TemplateRequest $request)
     {
         try {
-            
+
             saveFile($request, 'template');
-            
+
             $template = Template::createWithLoginUser($request->all());
 
             return response()->json([
@@ -55,7 +54,7 @@ class TemplateController extends Controller
                 'message' => 'Template added successfully!',
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -77,7 +76,7 @@ class TemplateController extends Controller
                 'template' => $template,
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -111,7 +110,7 @@ class TemplateController extends Controller
                 'message' => 'Template updated successfully!',
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -127,28 +126,28 @@ class TemplateController extends Controller
     {
         try {
 
-            $ids = explode(",", $id);
-            
+            $ids = explode(',', $id);
+
             $templates = Template::loginUser()->findMany($ids);
 
-            if($templates->isNotEmpty()){
-                $templates->each(function ($template) use($request) {
+            if ($templates->isNotEmpty()) {
+                $templates->each(function ($template) use ($request) {
                     deleteFile($request, $template->file_path);
                     $template->delete();
                 });
-                $msg = count($templates) > 1 ? "(" . count($templates) . ") Templates" : "Template";
-            }else{
+                $msg = count($templates) > 1 ? '('.count($templates).') Templates' : 'Template';
+            } else {
                 return response()->json([
                     'message' => 'Template not found!',
                     'status' => false,
                 ], 404);
-            };
+            }
 
             return response()->json([
                 'message' => "$msg deleted successfully!",
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -160,7 +159,6 @@ class TemplateController extends Controller
     /**
      * There custom functions =========================================
      */
-    
     public function getAllTemplates()
     {
         try {
@@ -170,12 +168,12 @@ class TemplateController extends Controller
             Template::loginUser()->chunk(100, function ($chunk) use (&$all_templates) {
                 $all_templates = array_merge($all_templates, $chunk->toArray());
             });
-            
+
             return response()->json([
                 'all_templates' => $all_templates,
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),

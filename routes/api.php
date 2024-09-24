@@ -3,8 +3,8 @@
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmailController;
-use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\TemplateController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -26,33 +26,33 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/check-auth', function () {
     return response()->json([
-        'authenticated' => Auth::check()
+        'authenticated' => Auth::check(),
     ]);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::prefix('category')->name('category.')->group(function(){
+    Route::prefix('category')->name('category.')->group(function () {
         Route::get('/all', [CategoryController::class, 'getAllCategories'])->name('all');
     });
     Route::resource('category', CategoryController::class);
-    
-    Route::prefix('emails')->name('emails.')->group(function(){
+
+    Route::prefix('emails')->name('emails.')->group(function () {
         Route::post('/upload-email-csv', [EmailController::class, 'uploadEmailCsv'])->name('upload-email-csv');
     });
     Route::resource('emails', EmailController::class);
 
-    Route::prefix('template')->name('template.')->group(function(){
+    Route::prefix('template')->name('template.')->group(function () {
         Route::get('/all', [TemplateController::class, 'getAllTemplates'])->name('all');
     });
     Route::resource('template', TemplateController::class);
 
-    Route::prefix('campaign')->name('campaign.')->group(function(){
+    Route::prefix('campaign')->name('campaign.')->group(function () {
         Route::post('/run/{id}', [CampaignController::class, 'runCampaign'])->name('run');
     });
     Route::resource('campaign', CampaignController::class);
 
-    Route::prefix('notifications')->name('notifications.')->group(function(){
+    Route::prefix('notifications')->name('notifications.')->group(function () {
         Route::get('/count', [NotificationController::class, 'notificationsCount'])->name('count');
     });
     Route::resource('notifications', NotificationController::class);

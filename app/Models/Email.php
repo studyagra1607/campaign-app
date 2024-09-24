@@ -4,16 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 class Email extends Model
 {
     use HasFactory;
-    
+
     protected $appends = [
-        'category_ids'
+        'category_ids',
     ];
-    
+
     protected $fillable = [
         'name',
         'email',
@@ -27,12 +26,11 @@ class Email extends Model
         'status' => 'boolean',
     ];
 
-    
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-    
+
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'category_email');
@@ -52,10 +50,11 @@ class Email extends Model
     {
         return $query->where('user_id', auth()->id());
     }
-    
+
     public function scopeCreateWithLoginUser($query, $data)
     {
         $data['user_id'] = auth()->id();
+
         return $query->create($data);
     }
 
@@ -72,11 +71,10 @@ class Email extends Model
             $model->name = stringTrim($model->name);
             $model->email = stringTrim(strtolower($model->email));
         });
-        
+
         static::saved(function ($model) {
             $model->categories()->sync(request()->input('category_ids'));
             $model->load('categories');
         });
     }
-    
 }

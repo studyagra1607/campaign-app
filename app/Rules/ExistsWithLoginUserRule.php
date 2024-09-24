@@ -5,13 +5,13 @@ namespace App\Rules;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ExistsWithLoginUserRule implements Rule
 {
     protected $table;
+
     protected $ignoreUser;
-    
+
     public function __construct($table, $ignoreUser = false)
     {
         $this->table = $table;
@@ -21,15 +21,15 @@ class ExistsWithLoginUserRule implements Rule
     public function passes($attribute, $value)
     {
 
-        if(gettype($value) === 'string'){
-            $value = explode(",", $value);
-        };
-        
+        if (gettype($value) === 'string') {
+            $value = explode(',', $value);
+        }
+
         $query = DB::table($this->table)->whereIn('id', $value);
-        
-        if (!$this->ignoreUser) {
+
+        if (! $this->ignoreUser) {
             $query->where('user_id', Auth::id());
-        };
+        }
 
         return $query->exists();
     }

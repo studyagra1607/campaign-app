@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\CsvRule;
 use App\Rules\ExistsWithLoginUserRule;
 use App\Rules\TrimedStringRule;
 use App\Rules\UniqueWithLoginUserRule;
@@ -26,7 +25,7 @@ class EmailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['bail', 'required', 'string', 'max:255', new TrimedStringRule()],
+            'name' => ['bail', 'required', 'string', 'max:255', new TrimedStringRule],
             'email' => ['bail', 'required', 'email', 'max:255', new UniqueWithLoginUserRule('emails', 'email', 'email', $this->route('email'))],
             'subscribe' => 'boolean',
             'status' => 'boolean',
@@ -44,7 +43,7 @@ class EmailRequest extends FormRequest
     public function attributes()
     {
         return [
-            'category_ids' => 'category'
+            'category_ids' => 'category',
         ];
     }
 
@@ -55,5 +54,4 @@ class EmailRequest extends FormRequest
             'status' => setBoolean($this->status),
         ]);
     }
-    
 }

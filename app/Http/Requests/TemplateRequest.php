@@ -24,7 +24,7 @@ class TemplateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['bail', 'required', 'string', 'max:255', new TrimedStringRule(), new UniqueWithLoginUserRule('templates', 'name', 'template', $this->route('template'))],
+            'name' => ['bail', 'required', 'string', 'max:255', new TrimedStringRule, new UniqueWithLoginUserRule('templates', 'name', 'template', $this->route('template'))],
             'file' => [
                 'bail',
                 'required_without:id',
@@ -46,7 +46,7 @@ class TemplateRequest extends FormRequest
     public function attributes()
     {
         return [
-            
+
         ];
     }
 
@@ -56,5 +56,4 @@ class TemplateRequest extends FormRequest
             'name' => preg_replace('/\s+/', ' ', trim($this->name)),
         ]);
     }
-    
 }

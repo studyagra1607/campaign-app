@@ -20,7 +20,7 @@ class NotificationController extends Controller
                 'notifications' => $notifications,
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -70,16 +70,16 @@ class NotificationController extends Controller
 
             $notification = auth()->user()->notifications->where('id', $id)->first();
 
-            if(!$notification->read_at){
+            if (! $notification->read_at) {
                 $notification->markAsRead();
                 event(new UserEvent(auth()->id(), 'notification'));
-            };            
-            
+            }
+
             return response()->json([
                 'notification' => $notification,
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -94,30 +94,30 @@ class NotificationController extends Controller
     public function destroy($id)
     {
         try {
-            
-            $ids = explode(",", $id);
+
+            $ids = explode(',', $id);
 
             $notifications = auth()->user()->notifications()->findMany($ids);
-            
-            if($notifications->isNotEmpty()){
+
+            if ($notifications->isNotEmpty()) {
                 $notifications->each(function ($notification) {
                     $notification->delete();
                 });
-                $msg = count($notifications) > 1 ? "(" . count($notifications) . ") Notifications" : "Notification";
-            }else{
+                $msg = count($notifications) > 1 ? '('.count($notifications).') Notifications' : 'Notification';
+            } else {
                 return response()->json([
                     'message' => 'Notification not found!',
                     'status' => false,
                 ], 404);
-            };
-            
+            }
+
             event(new UserEvent(auth()->id(), 'notification'));
-            
+
             return response()->json([
                 'message' => "$msg deleted successfully!",
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -136,7 +136,7 @@ class NotificationController extends Controller
                 'notifications_count' => $notifications_count,
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),

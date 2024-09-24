@@ -6,7 +6,6 @@ use App\Http\Requests\CampaignRequest;
 use App\Jobs\SendEmailsToUsersJob;
 use App\Models\Campaign;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class CampaignController extends Controller
 {
@@ -23,7 +22,7 @@ class CampaignController extends Controller
                 'campaigns' => $campaigns,
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -54,7 +53,7 @@ class CampaignController extends Controller
                 'message' => 'Campaign added successfully!',
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -76,7 +75,7 @@ class CampaignController extends Controller
                 'campaign' => $campaign,
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -108,7 +107,7 @@ class CampaignController extends Controller
                 'message' => 'Campaign updated successfully!',
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -124,27 +123,27 @@ class CampaignController extends Controller
     {
         try {
 
-            $ids = explode(",", $id);
-            
+            $ids = explode(',', $id);
+
             $campaigns = Campaign::loginUser()->findMany($ids);
 
-            if($campaigns->isNotEmpty()){
+            if ($campaigns->isNotEmpty()) {
                 $campaigns->each(function ($campaign) {
                     $campaign->delete();
                 });
-                $msg = count($campaigns) > 1 ? "(" . count($campaigns) . ") Campaigns" : "Campaign";
-            }else{
+                $msg = count($campaigns) > 1 ? '('.count($campaigns).') Campaigns' : 'Campaign';
+            } else {
                 return response()->json([
                     'message' => 'Campaign not found!',
                     'status' => false,
                 ], 404);
-            };
+            }
 
             return response()->json([
                 'message' => "$msg deleted successfully!",
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -156,7 +155,6 @@ class CampaignController extends Controller
     /**
      * There custom functions =========================================
      */
-    
     public function runCampaign(Request $request, $id)
     {
         try {
@@ -167,21 +165,21 @@ class CampaignController extends Controller
                 'progress_status' => 'running',
                 'last_run' => now(),
             ]);
-            
-            if($campaign){
+
+            if ($campaign) {
                 dispatch(new SendEmailsToUsersJob($campaign));
-            }else{
+            } else {
                 return response()->json([
-                    'message' => "Campaign is not active!",
+                    'message' => 'Campaign is not active!',
                     'status' => false,
                 ], 400);
-            };
-            
+            }
+
             return response()->json([
                 'message' => 'Campaign start successfully!',
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -189,5 +187,4 @@ class CampaignController extends Controller
             ], 400);
         }
     }
-    
 }

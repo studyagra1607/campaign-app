@@ -25,7 +25,7 @@ class CampaignRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['bail', 'required', 'string', 'max:255', new TrimedStringRule(), new UniqueWithLoginUserRule('campaigns', 'name', 'campaign', $this->route('campaign'))],
+            'name' => ['bail', 'required', 'string', 'max:255', new TrimedStringRule, new UniqueWithLoginUserRule('campaigns', 'name', 'campaign', $this->route('campaign'))],
             'status' => 'boolean',
             'category_id' => ['bail', 'required', new ExistsWithLoginUserRule('categories')],
             'template_id' => ['bail', 'required', new ExistsWithLoginUserRule('templates')],
@@ -53,5 +53,4 @@ class CampaignRequest extends FormRequest
             'status' => setBoolean($this->status),
         ]);
     }
-
 }

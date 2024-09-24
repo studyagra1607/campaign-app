@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class Campaign extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'name',
         'status',
@@ -26,7 +25,7 @@ class Campaign extends Model
     protected $casts = [
         'status' => 'boolean',
     ];
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -51,10 +50,11 @@ class Campaign extends Model
     {
         return $query->where('user_id', auth()->id());
     }
-    
+
     public function scopeCreateWithLoginUser($query, $data)
     {
         $data['user_id'] = auth()->id();
+
         return $query->create($data);
     }
 
@@ -68,10 +68,10 @@ class Campaign extends Model
         if ($status === 'complete') {
             $updateData['run_count'] = DB::raw('run_count + 1');
         }
-    
+
         return $query->update($updateData);
     }
-    
+
     protected static function boot()
     {
         parent::boot();
@@ -91,5 +91,4 @@ class Campaign extends Model
             $builder->with('category', 'template');
         });
     }
-    
 }

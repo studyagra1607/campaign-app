@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
@@ -17,12 +16,12 @@ class CategoryController extends Controller
         try {
 
             $categories = Category::loginUser()->paginate($request->page_rows);
-            
+
             return response()->json([
                 'categories' => $categories,
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -53,7 +52,7 @@ class CategoryController extends Controller
                 'message' => 'Category created successfully!',
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -75,7 +74,7 @@ class CategoryController extends Controller
                 'category' => $category,
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -107,7 +106,7 @@ class CategoryController extends Controller
                 'message' => 'Category updated successfully!',
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -123,27 +122,27 @@ class CategoryController extends Controller
     {
         try {
 
-            $ids = explode(",", $id);
-            
+            $ids = explode(',', $id);
+
             $categories = Category::loginUser()->findMany($ids);
 
-            if($categories->isNotEmpty()){
+            if ($categories->isNotEmpty()) {
                 $categories->each(function ($category) {
                     $category->delete();
                 });
-                $msg = count($categories) > 1 ? "(" . count($categories) . ") Categories" : "Category";
-            }else{
+                $msg = count($categories) > 1 ? '('.count($categories).') Categories' : 'Category';
+            } else {
                 return response()->json([
                     'message' => 'Category not found!',
                     'status' => false,
                 ], 404);
-            };
+            }
 
             return response()->json([
                 'message' => "$msg deleted successfully!",
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -155,7 +154,6 @@ class CategoryController extends Controller
     /**
      * There custom functions =========================================
      */
-
     public function getAllCategories()
     {
         try {
@@ -165,12 +163,12 @@ class CategoryController extends Controller
             Category::loginUser()->chunk(100, function ($chunk) use (&$all_categories) {
                 $all_categories = array_merge($all_categories, $chunk->toArray());
             });
-            
+
             return response()->json([
                 'all_categories' => $all_categories,
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -178,5 +176,4 @@ class CategoryController extends Controller
             ], 400);
         }
     }
-    
 }

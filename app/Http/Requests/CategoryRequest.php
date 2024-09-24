@@ -24,7 +24,7 @@ class CategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['bail', 'required', 'string', 'max:255', new TrimedStringRule(), new UniqueWithLoginUserRule('categories', 'name', 'category', $this->route('category'))],
+            'name' => ['bail', 'required', 'string', 'max:255', new TrimedStringRule, new UniqueWithLoginUserRule('categories', 'name', 'category', $this->route('category'))],
             'status' => 'boolean',
         ];
     }
@@ -32,14 +32,14 @@ class CategoryRequest extends FormRequest
     public function messages()
     {
         return [
-            
+
         ];
     }
 
     public function attributes()
     {
         return [
-            
+
         ];
     }
 
@@ -49,5 +49,4 @@ class CategoryRequest extends FormRequest
             'status' => setBoolean($this->status),
         ]);
     }
-    
 }

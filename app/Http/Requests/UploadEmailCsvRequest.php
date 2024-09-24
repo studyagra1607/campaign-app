@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Rules\ExistsWithLoginUserRule;
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UploadEmailCsvRequest extends FormRequest
@@ -53,5 +52,4 @@ class UploadEmailCsvRequest extends FormRequest
             'category_ids' => 'category',
         ];
     }
-    
 }

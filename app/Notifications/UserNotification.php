@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class UserNotification extends Notification implements ShouldQueue
@@ -12,8 +11,9 @@ class UserNotification extends Notification implements ShouldQueue
     use Queueable;
 
     public $type;
+
     public $msg;
-    
+
     /**
      * Create a new notification instance.
      */

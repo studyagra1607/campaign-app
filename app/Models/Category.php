@@ -13,7 +13,7 @@ class Category extends Model
         'emails_count',
         'availables_count',
     ];
-    
+
     protected $fillable = [
         'name',
         'status',
@@ -23,7 +23,7 @@ class Category extends Model
     protected $casts = [
         'status' => 'boolean',
     ];
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -33,7 +33,7 @@ class Category extends Model
     {
         return $this->belongsToMany(Email::class, 'category_email');
     }
-    
+
     public function scopeActive($query)
     {
         return $query->where('status', 1);
@@ -43,10 +43,11 @@ class Category extends Model
     {
         return $query->where('user_id', auth()->id());
     }
-    
+
     public function scopeCreateWithLoginUser($query, $data)
     {
         $data['user_id'] = auth()->id();
+
         return $query->create($data);
     }
 
@@ -59,7 +60,7 @@ class Category extends Model
     {
         return $this->emails()->where('subscribe', 1)->where('status', 1)->count();
     }
-    
+
     protected static function boot()
     {
         parent::boot();
@@ -68,5 +69,4 @@ class Category extends Model
             $model->name = stringTrim($model->name);
         });
     }
-    
 }

@@ -13,17 +13,16 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class VerifyUploadEmailCsvJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, CsvParser;
+    use CsvParser, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $data;
-    
+
     /**
      * Create a new job instance.
      */
@@ -38,35 +37,34 @@ class VerifyUploadEmailCsvJob implements ShouldQueue
     public function handle(): void
     {
         $csvErrors = [];
-        
+
         $filename = $this->data['file_name'];
 
         $userId = $this->data['user_id'];
 
         $logService = new UserLogService($userId);
 
-        $logService->logForUser(PHP_EOL . PHP_EOL);
-        
-        $logService->logForUser("User {$userId} Started: emails uploading at " . now()->format('d-m-y H:i:s') . ".");
+        $logService->logForUser(PHP_EOL.PHP_EOL);
 
-        $logService->logForUser("Received data form user: ", $this->data);
-        
+        $logService->logForUser("User {$userId} Started: emails uploading at ".now()->format('d-m-y H:i:s').'.');
+
+        $logService->logForUser('Received data form user: ', $this->data);
+
         if (Storage::disk('local')->exists($this->data['file_path'])) {
 
             $file = Storage::disk('local')->get($this->data['file_path']);
 
             $data = collect($this->CsvToArray($file, true));
-            
-            $logService->logForUser("Collect csv data from uploaded file!");
-            
-            $logService->logForUser("Csv verification start at " . now()->format('d-m-y H:i:s') . ".");
-            
+
+            $logService->logForUser('Collect csv data from uploaded file!');
+
+            $logService->logForUser('Csv verification start at '.now()->format('d-m-y H:i:s').'.');
+
             $data->chunk(100)->each(function ($chunk) use (&$csvErrors, &$logService) {
-                foreach ($chunk as $key => $row)
-                {
-            
+                foreach ($chunk as $key => $row) {
+
                     $validator = Validator::make($row, config('constant.email_csv_rules'));
-                    
+
                     if ($validator->fails()) {
 
                         $collect = [
@@ -74,36 +72,36 @@ class VerifyUploadEmailCsvJob implements ShouldQueue
                             json_encode($row),
                             json_encode($validator->errors()->toArray()),
                         ];
-                        
+
                         array_push($csvErrors, $collect);
 
-                        $logService->logForUser('Csv Validation Error on line no. '.$key+2, $validator->errors()->toArray());
-                        
-                    };
+                        $logService->logForUser('Csv Validation Error on line no. '.$key + 2, $validator->errors()->toArray());
 
-                };
+                    }
+
+                }
             });
 
-            $logService->logForUser("Csv verification end at " . now()->format('d-m-y H:i:s') . ".");
-            
-        }else{
+            $logService->logForUser('Csv verification end at '.now()->format('d-m-y H:i:s').'.');
+
+        } else {
 
             $logService->logForUser('Uploaded csv file not found!');
-            $logService->logForUser(PHP_EOL . PHP_EOL);
+            $logService->logForUser(PHP_EOL.PHP_EOL);
 
             $msg = "<b>$filename</b> verification failed!";
-            $temp = $msg . "<ul><li>Uploaded csv file not found!</li></ul>"; 
+            $temp = $msg.'<ul><li>Uploaded csv file not found!</li></ul>';
 
             $user = User::find($userId);
             $user->notify(new UserNotification('error', $temp));
-            
-            event(new UserEvent($userId, 'csv-verification', ['type' => 'error', 'msg' => $msg]));
-            
-            return;
-            
-        };
 
-        if(!empty($csvErrors)){
+            event(new UserEvent($userId, 'csv-verification', ['type' => 'error', 'msg' => $msg]));
+
+            return;
+
+        }
+
+        if (! empty($csvErrors)) {
             $headers = [
                 'Line No.',
                 'Data',
@@ -112,7 +110,7 @@ class VerifyUploadEmailCsvJob implements ShouldQueue
 
             array_unshift($csvErrors, $headers);
             $csvErrorsFile = $this->arrayToCsv($csvErrors);
-            
+
             $slugname = Str::slug(pathinfo($filename, PATHINFO_FILENAME));
             $extension = pathinfo($filename, PATHINFO_EXTENSION);
             $folder_name = 'csv-errors';
@@ -124,35 +122,35 @@ class VerifyUploadEmailCsvJob implements ShouldQueue
 
             $logService->logForUser("Csv errors file saved successfully on: $full_filepath");
 
-            $logService->logForUser("User {$userId} Failed: emails csv verification at " . now()->format('d-m-y H:i:s') . ".");
-            
+            $logService->logForUser("User {$userId} Failed: emails csv verification at ".now()->format('d-m-y H:i:s').'.');
+
             $msg = "<b>$filename</b> verification failed! ";
-            $temp = $msg . " <a href='" . config('app.url') . "/storage/{$full_filepath}'>view errors</a>";
+            $temp = $msg." <a href='".config('app.url')."/storage/{$full_filepath}'>view errors</a>";
 
             $user = User::find($userId);
             $user->notify(new UserNotification('error', $temp));
-            
-            event(new UserEvent($userId, 'csv-verification', ['type' => 'error', 'msg' => $msg]));
-            
-        }else{
 
-            $logService->logForUser("User {$userId} Completed: emails csv verification at " . now()->format('d-m-y H:i:s') . ".");
+            event(new UserEvent($userId, 'csv-verification', ['type' => 'error', 'msg' => $msg]));
+
+        } else {
+
+            $logService->logForUser("User {$userId} Completed: emails csv verification at ".now()->format('d-m-y H:i:s').'.');
 
             $msg = "<b>$filename</b> verified successfully!";
-            
+
             $user = User::find($userId);
             $user->notify(new UserNotification('info', $msg));
-            
+
             event(new UserEvent($userId, 'csv-verification', ['type' => 'success', 'msg' => $msg]));
-            
+
             sleep(3);
-            
+
             dispatch(new UploadEmailCsvToDBJob($this->data));
-            
-        };
-        
-        $logService->logForUser(PHP_EOL . PHP_EOL);
-        
+
+        }
+
+        $logService->logForUser(PHP_EOL.PHP_EOL);
+
     }
 
     public function failed(Exception $exception)
@@ -161,17 +159,17 @@ class VerifyUploadEmailCsvJob implements ShouldQueue
         $filename = $this->data['file_name'];
 
         $logService = new UserLogService($userId);
-        $logService->logForUser(PHP_EOL . PHP_EOL);
-        $logService->logForUser("Job failed: " . class_basename($this));
-        $logService->logForUser("Reason message: " . $exception->getMessage());
-        $logService->logForUser(PHP_EOL . PHP_EOL);
+        $logService->logForUser(PHP_EOL.PHP_EOL);
+        $logService->logForUser('Job failed: '.class_basename($this));
+        $logService->logForUser('Reason message: '.$exception->getMessage());
+        $logService->logForUser(PHP_EOL.PHP_EOL);
 
         $msg = "<b>$filename</b> verification failed!";
-        $temp = $msg . "<ul><li>".$exception->getMessage()."</li></ul>";  
+        $temp = $msg.'<ul><li>'.$exception->getMessage().'</li></ul>';
 
         $user = User::find($userId);
         $user->notify(new UserNotification('error', $temp));
-        
+
         event(new UserEvent($userId, 'csv-verification', ['type' => 'error', 'msg' => $msg]));
     }
 }

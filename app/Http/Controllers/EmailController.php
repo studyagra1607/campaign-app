@@ -7,7 +7,6 @@ use App\Http\Requests\UploadEmailCsvRequest;
 use App\Jobs\VerifyUploadEmailCsvJob;
 use App\Models\Email;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class EmailController extends Controller
 {
@@ -24,7 +23,7 @@ class EmailController extends Controller
                 'emails' => $emails,
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -55,7 +54,7 @@ class EmailController extends Controller
                 'message' => 'Email added successfully!',
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -77,7 +76,7 @@ class EmailController extends Controller
                 'email' => $email,
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -109,7 +108,7 @@ class EmailController extends Controller
                 'message' => 'Email updated successfully!',
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -125,27 +124,27 @@ class EmailController extends Controller
     {
         try {
 
-            $ids = explode(",", $id);
-            
+            $ids = explode(',', $id);
+
             $emails = Email::loginUser()->findMany($ids);
 
-            if($emails->isNotEmpty()){
+            if ($emails->isNotEmpty()) {
                 $emails->each(function ($email) {
                     $email->delete();
                 });
-                $msg = count($emails) > 1 ? "(" . count($emails) . ") Emails" : "Email";
-            }else{
+                $msg = count($emails) > 1 ? '('.count($emails).') Emails' : 'Email';
+            } else {
                 return response()->json([
                     'message' => 'Email not found!',
                     'status' => false,
                 ], 404);
-            };
+            }
 
             return response()->json([
                 'message' => "$msg deleted successfully!",
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),
@@ -157,24 +156,23 @@ class EmailController extends Controller
     /**
      * There custom functions =========================================
      */
-    
     public function uploadEmailCsv(UploadEmailCsvRequest $request)
     {
         try {
-            
+
             saveFile($request, 'csv');
-            
+
             $request->merge([
                 'user_id' => auth()->id(),
             ]);
-            
+
             dispatch(new VerifyUploadEmailCsvJob($request->except(['file', 'hash'])));
 
             return response()->json([
                 'message' => 'CSV Uploaded successfully!',
                 'status' => true,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage().$e->getLine(),

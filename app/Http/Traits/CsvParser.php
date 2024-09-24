@@ -2,32 +2,32 @@
 
 namespace App\Http\Traits;
 
-trait CsvParser {
-
+trait CsvParser
+{
     public function CsvToArray($file, $getted = false)
     {
-        if(!$getted){
+        if (! $getted) {
             $content = file_get_contents($file);
-        }else{
+        } else {
             $content = $file;
-        };
+        }
         $rows = array_map('str_getcsv', explode(PHP_EOL, $content));
         $rowKeys = array_shift($rows);
         $formattedData = [];
         foreach ($rows as $row) {
-            if(sizeof($row) == sizeof($rowKeys)){
+            if (count($row) == count($rowKeys)) {
                 $associatedRowData = array_combine($rowKeys, $row);
-                if(empty($keyField)){
+                if (empty($keyField)) {
                     $formattedData[] = $associatedRowData;
-                }
-                else{
+                } else {
                     $formattedData[$associatedRowData[$keyField]] = $associatedRowData;
                 }
             }
         }
+
         return $formattedData;
     }
-    
+
     // public function CsvToArray($file)
     // {
     //     $csvString = file_get_contents($file);
@@ -53,5 +53,4 @@ trait CsvParser {
 
         return $csvContent;
     }
-
 }

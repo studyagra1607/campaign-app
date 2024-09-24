@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Template extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'name',
         'file_name',
@@ -17,7 +17,7 @@ class Template extends Model
         'hash',
         'user_id',
     ];
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -37,10 +37,11 @@ class Template extends Model
     {
         return $query->where('user_id', auth()->id());
     }
-    
+
     public function scopeCreateWithLoginUser($query, $data)
     {
         $data['user_id'] = auth()->id();
+
         return $query->create($data);
     }
 
@@ -48,5 +49,4 @@ class Template extends Model
     {
         return $query->loginUser()->where('hash', $hash);
     }
-
 }
