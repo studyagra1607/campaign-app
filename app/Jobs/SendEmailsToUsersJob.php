@@ -113,7 +113,7 @@ class SendEmailsToUsersJob implements ShouldQueue
         $fileInfo = $this->createEmailsStatusCsv($logService, $emails_status);
 
         $msg = "<b>{$this->data['name']}</b> campaign completed successfully! ";
-        $temp = $msg." <a href='".config('app.url')."/storage/{$fileInfo['full_filepath']}'>view status</a>";
+        $temp = $msg." <a download='{$fileInfo['file_slug']}' href='".config('app.url')."/storage/{$fileInfo['full_filepath']}'>view status</a>";
 
         $logService->logForUser($temp);
 

@@ -50,7 +50,7 @@
 				</div>
 				<div class="text-[.68rem] mt-1" v-if="visibleOnec">
 					<i class="pi pi-exclamation-circle text-[.6rem]"></i>
-					Upload a valid file in CSV, XLS, or XLSX <a :href="$env.VITE_APP_URL+'/assets/sample-email-csv.csv'" class="underline" download="sample-email-csv">sample</a>.
+					Upload a valid file in CSV, XLS, or XLSX <a :href="$env.VITE_APP_URL+'/assets/sample-email-csv.csv'" class="underline" download="sample-email-csv.csv">sample</a>.
 				</div>
 			</div>
 			<span class="input-error-msg" v-if="errors?.file" v-html="errors?.file[0]"></span>

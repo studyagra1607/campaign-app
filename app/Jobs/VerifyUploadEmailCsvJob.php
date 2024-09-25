@@ -125,7 +125,7 @@ class VerifyUploadEmailCsvJob implements ShouldQueue
             $logService->logForUser("User {$userId} Failed: emails csv verification at ".now()->format('d-m-y H:i:s').'.');
 
             $msg = "<b>$filename</b> verification failed! ";
-            $temp = $msg." <a href='".config('app.url')."/storage/{$full_filepath}'>view errors</a>";
+            $temp = $msg." <a download='{$file_slug}' href='".config('app.url')."/storage/{$full_filepath}'>view errors</a>";
 
             $user = User::find($userId);
             $user->notify(new UserNotification('error', $temp));
